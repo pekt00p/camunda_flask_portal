@@ -1,10 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Portal basic design</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+
+
 </head>
 <body>
-<form method="POST" action="{{url_for('request_processor')}}" 
-<h1>{{task_count}}</h1>
+<form method="POST" action="{{url_for('request_processor')}}"> 
+    <div class="jumbotron text-center" style="margin-bottom:0">
+      <h1>Baltic North Wind Farm Portal</h1>
+    </div>
+
+    <div class="container" style="margin-top:30px">
+      <div class="row">
+        <div class="col-sm-3">
+             <br>
+             <button type="button" id="my_tasks_button" class="btn btn-danger">
+                 My Tasks <span class="badge badge-light">{{task_count}}</span>
+             </button>
+             <br><br><br>
+             <button type="button" id="group_tasks_button" class="btn btn-warning">
+                 Group Tasks <span class="badge badge-light"></span>
+             </button>
+             <br><br><br>
+             <button type="button" id="my_requests_button" class="btn btn-primary">
+                 My Requests <span class="badge badge-light"></span>
+             </button>
+             <br><br><br>
+             <button type="button" id="notifications_button" class="btn btn-info">
+                 Notifications <span class="badge badge-light"></span>
+             </button>
+             <br><br><br>
+             <button type="button" id="create_requests_button" class="btn btn-success">
+                 Create Requests <span class="badge badge-light"></span>
+             </button>
+             <br><br><br>
+
+        </div>
+        <div class="col-sm-3" id="record_list">
+
+        </div>
+        <div class="col-sm-6" id="process_form">
+
+        </div>
+      </div>
+    </div>
+
+    <div class="jumbotron text-center" style="margin-bottom:0">
+      <p>@ 2021</p>
+    </div>
 </form>
 </body>
+<script type="text/javascript">  
+    <!-- This is initializer code for navigation buttons-->
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('button').forEach(button => {
+            button.onclick = () => {
+                const request = new XMLHttpRequest();
+                request.open('POST', `/${button.id}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    document.getElementById('record_list').innerHTML = response;
+                   
+
+
+            $('#sortTable').DataTable();
+            
+            $('#sortTable tbody tr').click(function() {
+            getUserTask(this);
+   
+    $(this).addClass('active').siblings().removeClass('active');
+});
+                    
+                }; 
+                request.send();                    
+            };
+        });
+    });
+
+    
+    function getUserTask(obj){
+                const request = new XMLHttpRequest();
+                request.open('POST', `/get_task_by_id/${obj.id}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    document.getElementById('process_form').innerHTML = response; 
+                    $('#sortTable').DataTable();
+                }; 
+                request.send();             
+    }
+</script>
+
+
 </html>
