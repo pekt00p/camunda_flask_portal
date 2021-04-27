@@ -31,7 +31,15 @@ def get_my_tasks():
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id):
     response = ut.get_task_vars_by_id(connector, task_id)
-    return response['response']
+    return render_template('user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html',
+                           variables=response, task_id=task_id)
+                           
+@app.route("/complete_task_by_id/<task_id>", methods=["POST"])
+def complete_task(task_id):
+    data = '{"variables":{"aVariable": {"output_comments": "Live is good!"}}}'
+    response = ut.complete_task_by_id(connector, task_id, data=data)
+    response = ut.get_all_user_tasks(connector)
+    return render_template('my_tasks.html', my_tasks=response['response'])
 
 @app.route("/request_processor", methods=['POST'])
 def request_processor(form=None):

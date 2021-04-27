@@ -34,13 +34,19 @@ class PortalConnector:
             return {'status': Statuses.Exception, 'code': '',
                     'message': 'Mainetnace, please try again later'}
                     
-    def execute_get_request(self, request_url):
+    def execute_request(self, request_url, type='GET', data=None):
         url = (str(self.camunda_url) + ':' + str(self.camunda_port) + request_url)
-        try:           
-            get_response = requests.get(url, auth=(self.camunda_user_name, self.camunda_password))
-            status_code = get_response.status_code
+        try:
+            if type == 'GET':        
+                requests_response = requests.get(url, auth=(self.camunda_user_name, self.camunda_password))
+            elif type == 'POST':
+ 
+                data = json.loads(data)
+                requests_response = requests.post(url, auth=(self.camunda_user_name, self.camunda_password), json=data)
+                
+            status_code = requests_response.status_code
             if str(status_code).startswith('2'): # success codes starts with 2, e.g. 200, 201
-                json_response = json.loads(get_response.text)
+                json_response = json.loads(requests_response.text)
                 return {'status': Statuses.Success, 'response': json_response}
             else:
                 return {'status': Statuses.Failed, 'code': status_code}

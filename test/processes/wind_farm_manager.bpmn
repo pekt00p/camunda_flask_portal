@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0wmi77x" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1">
+  <bpmn:process id="Process_Wind_Farm_Manager" name="Wind Farm Manager" isExecutable="true" camunda:versionTag="1">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0p5bmbl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_1t6bki4">
+      <bpmn:incoming>Flow_0grvtuf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0p5bmbl" sourceRef="StartEvent_1" targetRef="Activity_Set_Variables" />
+    <bpmn:userTask id="Activity_Check_Wind_Turbine" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="input_wtg_name" />
+          <camunda:inputParameter name="input_wtg_fault_description" />
+          <camunda:inputParameter name="input_wtg_fault_code" />
+          <camunda:outputParameter name="output_comments" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0646b54</bpmn:incoming>
+      <bpmn:outgoing>Flow_0grvtuf</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:scriptTask id="Activity_Set_Variables" name="Prepare Input">
+      <bpmn:incoming>Flow_0p5bmbl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0646b54</bpmn:outgoing>
+      <bpmn:script>task.execution.setVariable("input_wtg_name", "WTG_017");
+task.execution.setVariable("input_wtg_fault_description", "Overheat");
+task.execution.setVariable("input_wtg_fault_code", "Nordex_TEMP_22");</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0646b54" sourceRef="Activity_Set_Variables" targetRef="Activity_Check_Wind_Turbine" />
+    <bpmn:sequenceFlow id="Flow_0grvtuf" sourceRef="Activity_Check_Wind_Turbine" targetRef="Event_1t6bki4" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_Wind_Farm_Manager">
+      <bpmndi:BPMNEdge id="Flow_0p5bmbl_di" bpmnElement="Flow_0p5bmbl">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="280" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0646b54_di" bpmnElement="Flow_0646b54">
+        <di:waypoint x="380" y="117" />
+        <di:waypoint x="480" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0grvtuf_di" bpmnElement="Flow_0grvtuf">
+        <di:waypoint x="580" y="117" />
+        <di:waypoint x="672" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ux578l_di" bpmnElement="Activity_Set_Variables">
+        <dc:Bounds x="280" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11afuog_di" bpmnElement="Activity_Check_Wind_Turbine">
+        <dc:Bounds x="480" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1t6bki4_di" bpmnElement="Event_1t6bki4">
+        <dc:Bounds x="672" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

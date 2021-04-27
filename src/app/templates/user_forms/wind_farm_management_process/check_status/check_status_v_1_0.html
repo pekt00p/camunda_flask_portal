@@ -1,0 +1,20 @@
+{% extends '/user_forms/main_view.html' %}
+
+
+
+{% block content %}
+    <div>
+        <h2>Wind Turbine Name:</h2>
+        <h3>{{variables.response.input_wtg_name.value}}</h3>
+    </div>
+       <div>
+        <h2>Error Code:</h2>
+        <h3>{{variables.response.input_wtg_fault_code.value}}</h3>
+    </div>
+    </div>
+       <div>
+        <h2>Error Description:</h2>
+        <h3>{{variables.response.input_wtg_fault_description.value}}</h3>
+    </div>
+{{task_id}}
+{% endblock %}

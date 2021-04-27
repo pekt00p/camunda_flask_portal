@@ -100,6 +100,17 @@
                 }; 
                 request.send();             
     }
+    
+    function completeUserTask(task_id){
+                alert(task_id); 
+                const request = new XMLHttpRequest();
+                request.open('POST', `/complete_task_by_id/${task_id}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    alert("Task Completed!"); 
+                }; 
+                request.send();                  
+    }
 </script>
 
 
