@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from app.connector import PortalConnector
 from app.portal_constants import Statuses
 import app.camunda.user_task as ut
 app = Flask(__name__)
+# Set the secret key to some random bytes. Keep this really secret!
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 connector = PortalConnector()
 @app.route("/", methods=['GET', 'POST'])
@@ -35,9 +37,10 @@ def get_task_form(task_id):
                            variables=response, task_id=task_id)
                            
 @app.route("/complete_task_by_id/<task_id>", methods=["POST"])
-def complete_task(task_id):
-    data = '{"variables":{"aVariable": {"output_comments": "Live is good!"}}}'
-    response = ut.complete_task_by_id(connector, task_id, data=data)
+def complete_task(task_id):   
+    #response = ut.complete_task_by_id(connector, task_id, data=data)
+    print("REQUEST:")
+    print(request.data)
     response = ut.get_all_user_tasks(connector)
     return render_template('my_tasks.html', my_tasks=response['response'])
 

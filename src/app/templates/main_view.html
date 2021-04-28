@@ -17,7 +17,7 @@
 
 </head>
 <body>
-<form method="POST" action="{{url_for('request_processor')}}"> 
+<form method="POST" id="main_form" action="{{url_for('request_processor')}}"> 
     <div class="jumbotron text-center" style="margin-bottom:0">
       <h1>Baltic North Wind Farm Portal</h1>
     </div>
@@ -52,7 +52,7 @@
 
         </div>
         <div class="col-sm-6" id="process_form">
-
+            
         </div>
       </div>
     </div>
@@ -96,21 +96,35 @@
                 request.onload = () => {
                     const response = request.responseText;
                     document.getElementById('process_form').innerHTML = response; 
+
                     $('#sortTable').DataTable();
                 }; 
                 request.send();             
     }
     
-    function completeUserTask(task_id){
-                alert(task_id); 
+    function completeUserTask(task_id){ 
+                var children = document.querySelectorAll('[id^="input_variable_"]'); 
+                var task_variables = {
+                    modifications: []
+                }
+                var variable_id = "";
+                for (i = 0; i < children.length; i++) {
+                    variable_id = children[i].id
+                    task_variables.modifications.push({ 
+                        variable_id : variable_id,
+                        "value"  : document.getElementById(variable_id).value,
+                        "type": "String" 
+    });
+                }
+                
                 const request = new XMLHttpRequest();
                 request.open('POST', `/complete_task_by_id/${task_id}`);
                 request.onload = () => {
-                    const response = request.responseText;
-                    alert("Task Completed!"); 
+                    const response = request.responseText;                 
                 }; 
-                request.send();                  
+                request.send(JSON.stringify(task_variables));                  
     }
+
 </script>
 
 
