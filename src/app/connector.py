@@ -9,6 +9,8 @@ class PortalConnector:
     parser.read('app/portal_config.ini')
     camunda_url = parser.get('camunda_server', 'url')
     camunda_port = parser.get('camunda_server', 'port')
+    portal_name = parser.get('portal_representation', 'name')
+    portal_date_format = parser.get('portal_representation', 'date_format')
     camunda_user_name = ''
     camunda_password = ''
 
@@ -16,18 +18,18 @@ class PortalConnector:
     def authenticate_user(self, flask_form):
         self.camunda_user_name = flask_form['uname']
         self.camunda_password = flask_form['pswd']
+        
         try:
             url = (str(self.camunda_url) + ':' + str(self.camunda_port) +
-                   '/engine-rest/task/count?assigned=true')
-            assigned_tasks_count_response = requests.get(url,
-                                                         auth=(self.camunda_user_name,
-                                                               self.camunda_password))
-            status_code = assigned_tasks_count_response.status_code
+                   '/engine-rest/user/' + self.camunda_user_name + '/profile')
+            user_profile = requests.get(url, auth=(self.camunda_user_name,
+                                                   self.camunda_password))
+            status_code = user_profile.status_code
             if status_code != 200:
                 return {'status': Statuses.Failed, 'code': status_code}
             else:
                 return {'status': Statuses.Success,
-                        'response': json.loads(assigned_tasks_count_response.text)}
+                        'response': json.loads(user_profile.text)}
 
         except Exception as ex:
             print('Engine is down ' + str(ex))

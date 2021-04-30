@@ -7,13 +7,11 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]2/'
 
 connector = PortalConnector()
-
+new_start = True
 @app.route("/", methods=['GET', 'POST'])
 def authenticate_user(form=None):
-    print(session)
-    if 'is_authenticated' in session:
-        return render_template('main_view.html',
-                                       task_count=10)
+    if 'is_authenticated' in session and not new_start:
+        return if_user_authenticated(connector)
     elif request.form:
         result = connector.authenticate_user(request.form)
         if result['status'] != Statuses.Success:
@@ -26,8 +24,7 @@ def authenticate_user(form=None):
                                        error, please check login or password')
         else:
             session['is_authenticated'] = True
-            return render_template('main_view.html',
-                                       task_count=result['response']['count'])
+            return if_user_authenticated(connector)
     return render_template('login.html')
 
 
@@ -58,3 +55,16 @@ def complete_task(task_id):
 @app.route("/request_processor", methods=['POST'])
 def request_processor(form=None):
     pass
+    
+# Sets values for initial page
+def if_user_authenticated(connector):
+    global new_start
+    new_start = False # prevents active session after restart
+    user_details = ut.get_user_profile(connector)
+    user_task_count = ut.count_all_user_tasks(connector)
+    group_task_count = ut.count_all_group_tasks(connector)
+    return render_template('main_view.html', 
+        user_details=user_details['response'],
+        user_task_count=user_task_count['response']['count'],
+        group_task_count=group_task_count['response']['count'])
+
