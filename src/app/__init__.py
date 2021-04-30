@@ -4,13 +4,17 @@ from app.portal_constants import Statuses
 import app.camunda.user_task as ut
 app = Flask(__name__)
 # Set the secret key to some random bytes. Keep this really secret!
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]2/'
 
 connector = PortalConnector()
+
 @app.route("/", methods=['GET', 'POST'])
 def authenticate_user(form=None):
- 
-    if request.form:
+    print(session)
+    if 'is_authenticated' in session:
+        return render_template('main_view.html',
+                                       task_count=10)
+    elif request.form:
         result = connector.authenticate_user(request.form)
         if result['status'] != Statuses.Success:
             if result['status'] == Statuses.Exception:
@@ -21,10 +25,17 @@ def authenticate_user(form=None):
                                        exception_message='Authentication \
                                        error, please check login or password')
         else:
+            session['is_authenticated'] = True
             return render_template('main_view.html',
-                                   task_count=result['response']['count'])
+                                       task_count=result['response']['count'])
     return render_template('login.html')
 
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.pop('is_authenticated')
+    return render_template('login.html')    
+    
 @app.route("/my_tasks_button", methods=["POST"])
 def get_my_tasks():
     response = ut.get_all_user_tasks(connector)

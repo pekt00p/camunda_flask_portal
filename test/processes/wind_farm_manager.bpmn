@@ -8,11 +8,24 @@
       <bpmn:incoming>Flow_0ofzgts</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0p5bmbl" sourceRef="StartEvent_1" targetRef="Activity_Set_Variables" />
-    <bpmn:userTask id="Activity_Check_Wind_Turbine" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo">
+    <bpmn:userTask id="Activity_Check_Wind_Turbine" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo" camunda:priority="10">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="user_comment" />
         </camunda:inputOutput>
+        <camunda:properties>
+          <camunda:property name="regexp" value="asdf" />
+        </camunda:properties>
+        <camunda:formData>
+          <camunda:formField id="FormField_test" label="test" type="string" defaultValue="x">
+            <camunda:properties>
+              <camunda:property id="regexp" value="a-z" />
+            </camunda:properties>
+            <camunda:validation>
+              <camunda:constraint name="minlength" config="1" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0646b54</bpmn:incoming>
       <bpmn:outgoing>Flow_0grvtuf</bpmn:outgoing>
@@ -27,6 +40,11 @@ execution.setVariable("fault_code", "Nordex_TEMP_22");</bpmn:script>
     <bpmn:sequenceFlow id="Flow_0646b54" sourceRef="Activity_Set_Variables" targetRef="Activity_Check_Wind_Turbine" />
     <bpmn:sequenceFlow id="Flow_0grvtuf" sourceRef="Activity_Check_Wind_Turbine" targetRef="Activity_Check_Wind_Turbine_Result" />
     <bpmn:userTask id="Activity_Check_Wind_Turbine_Result" name="Check Result" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_3gn0l86" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0grvtuf</bpmn:incoming>
       <bpmn:outgoing>Flow_0ofzgts</bpmn:outgoing>
     </bpmn:userTask>

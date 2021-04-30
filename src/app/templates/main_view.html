@@ -17,16 +17,27 @@
 
 </head>
 <body>
-<form method="POST" id="main_form" action="{{url_for('request_processor')}}"> 
+<form method="POST" "row g-3 needs-validation" novalidate id="main_form" action="{{url_for('request_processor')}}"> 
     <div class="jumbotron text-center" style="margin-bottom:0">
-      <h1>Baltic North Wind Farm Portal</h1>
+    <div class="row">
+         <div class="col-sm-3">
+         </div>
+        <div class="col-sm-6">
+            <h1>Baltic North Wind Farm Portal</h1>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" onclick="logout()" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+                Logout
+            </button>
+        </div>
+    </div>
     </div>
 
     <div class="container" style="margin-top:30px">
       <div class="row">
         <div class="col-sm-3">
              <br>
-             <button type="button" id="my_tasks_button" class="btn btn-danger">
+             <button type="button" onclick="setTasksView(this)" id="my_tasks_button" class="btn btn-danger">
                  My Tasks <span class="badge badge-light">{{task_count}}</span>
              </button>
              <br><br><br>
@@ -64,6 +75,34 @@
 </body>
 <script type="text/javascript">  
     <!-- This is initializer code for navigation buttons-->
+    
+    function setTasksView(button){
+        const request = new XMLHttpRequest();
+        request.open('POST', `/${button.id}`);
+        request.onload = () => {
+            const response = request.responseText;
+            document.getElementById('record_list').innerHTML = response;
+            $('#sortTable').DataTable();           
+            $('#sortTable tbody tr').click(function() {
+            getUserTask(this);           
+            $(this).addClass('active').siblings().removeClass('active');
+        });
+            
+        }; 
+        request.send();   
+    
+    };
+    
+    function logout(){
+        const request = new XMLHttpRequest();
+                request.open('POST', `/logout`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    document.write(response);
+                }; 
+                request.send();       
+    }
+/*    
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('button').forEach(button => {
             button.onclick = () => {
@@ -75,20 +114,20 @@
                    
 
 
-            $('#sortTable').DataTable();
-            
-            $('#sortTable tbody tr').click(function() {
-            getUserTask(this);
-   
-    $(this).addClass('active').siblings().removeClass('active');
-});
+                            $('#sortTable').DataTable();
+                            
+                            $('#sortTable tbody tr').click(function() {
+                            getUserTask(this);
+                   
+                    $(this).addClass('active').siblings().removeClass('active');
+                });
                     
                 }; 
                 request.send();                    
             };
         });
     });
-
+*/
     
     function getUserTask(obj){
                 const request = new XMLHttpRequest();
