@@ -10,7 +10,6 @@ class PortalConnector:
     camunda_url = parser.get('camunda_server', 'url')
     camunda_port = parser.get('camunda_server', 'port')
     portal_name = parser.get('portal_representation', 'name')
-    portal_date_format = parser.get('portal_representation', 'date_format')
     camunda_user_name = ''
     camunda_password = ''
 

@@ -15,6 +15,11 @@
 
   <form method="POST" action="{{url_for('authenticate_user')}}" class="was-validated">
 
+	<div class="form-group">			
+		<button type="submit"  class="btn bg-transparent" name="language" value="ru" title="Русский"><img src="static/img/Russia.png" /></button>
+		<button type="submit"  class="btn bg-transparent" name="language" value="en" title="English"><img src="static/img/UnitedKingdom.png" /></button>
+		<button type="submit"  class="btn bg-transparent" name="language" value="cn" title="中国"><img src="static/img/China.png" /></button>
+	</div>
     <div>
         <h1>Portal login form</h1>
     </div>
@@ -28,7 +33,7 @@
 
 
     <div class="form-group">
-      <label for="uname">Username:</label>
+      <label for="uname">{{translations.username}}:</label>
       <input type="text" class="form-control" id="uname" placeholder="Enter username" name="uname" 
           title="Should be 3-30 symbols long"
           pattern="^\w{3,20}$"
@@ -37,7 +42,7 @@
       <div class="invalid-feedback">Please fill out this field.</div>
     </div>
     <div class="form-group">
-      <label for="pwd">Password:</label>
+      <label for="pwd">{{translations.password}}:</label>
       <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd" 
           title="Should be 3-30 symbols long"
           pattern="^.{3,20}$"
@@ -50,4 +55,16 @@
 </div>
 
 </body>
+
+<script>
+    function change_language(button){
+        const request = new XMLHttpRequest();		      
+                request.open('POST', `/change_language/${button.value}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    location.reload();
+                }; 
+                request.send();       
+    }
+</script>
 </html>
