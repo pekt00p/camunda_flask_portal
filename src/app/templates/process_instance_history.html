@@ -1,0 +1,12 @@
+
+<h2>Execution history: </h2>
+    <br>
+    {%for record in variables%}
+        <div style="border:1px solid #cecece;">
+            <label>{{record.activityName}}</label><br>
+			<label>{{record.endTime}}</label><br>
+        </div>
+		<br>
+    {%endfor%}
+
+

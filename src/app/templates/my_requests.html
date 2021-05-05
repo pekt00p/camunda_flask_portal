@@ -1,0 +1,27 @@
+
+<h2> My Requests</h2>
+<table class="table table-striped table-bordered" id="sortTable">
+<thead>
+<tr>
+
+<th>Process Name</th>
+<th>Created</th>
+<th>Completed</th>
+<th>State</th>
+
+</tr>
+</thead>
+<tbody >
+    {%for record in my_requests%}
+
+        <tr id={{record.id}}>
+            <td>{{record.processDefinitionName}}</td>
+            <td>{{record.startTime}}</td>
+            <td>{{record.endTime}}</td>
+            <td>{{record.state}}</td>
+        </tr>
+    {%endfor%}
+
+</tbody>
+</table>
+

@@ -1,0 +1,24 @@
+[{
+
+        "key": "password",
+        "translations": {
+            "ru": "Пароль",
+            "en": "Password",
+            "cn": "密码"
+        }
+    }, {
+        "key": "username",
+        "translations": {
+            "ru": "Имя пользователя",
+            "en": "Username",
+            "cn": "用户名"
+        }
+    }, {
+        "key": "please_fill_out_this_field",
+        "translations": {
+            "ru": "Пожалуйста, заполните это поле.",
+            "en": "Please fill out this field.",
+            "cn": "请填写此字段。"
+        }
+    }
+]
