@@ -4,10 +4,12 @@ from app.portal_constants import Statuses
 from app.helpers import Translations, Validations
 import app.camunda.user_task as ut
 import app.camunda.history_service as hs
+from os import path
+import logging
 app = Flask(__name__)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]2/'
-
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', filename='app/logs/execution.log', encoding='utf-8', level=logging.DEBUG)
 tr = Translations()
 vl = Validations()
 connector = PortalConnector()
@@ -68,8 +70,14 @@ def get_my_requests():
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id):
     response = ut.get_task_vars_by_id(connector, task_id)
-    return render_template('user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html',
-                           variables=response, task_id=task_id)
+    task = ut.get_user_task_by_id(connector, task_id)
+    if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):    
+        return render_template(task['response']['formKey'],
+                               variables=response, task_id=task_id)
+    else: 
+         logging.error("Templete " + str(task['response']['formKey']) + 
+             " not found for process " + str(task['response']['processDefinitionId']))
+         return render_template('errors/404_form_not_found.html')
                            
                            
 @app.route("/get_process_history_by_id/<process_instance_id>", methods=["POST"])
