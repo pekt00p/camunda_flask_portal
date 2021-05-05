@@ -1,59 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Camunda portal login page</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>Camunda portal login page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
 </head>
 <body>
 
-<div class="container">
-
-  <form method="POST" action="{{url_for('authenticate_user')}}" class="was-validated">
-
-	<div class="form-group">			
-		<button type="submit"  class="btn bg-transparent" name="language" value="ru" title="Русский"><img src="static/img/Russia.png" /></button>
-		<button type="submit"  class="btn bg-transparent" name="language" value="en" title="English"><img src="static/img/UnitedKingdom.png" /></button>
-		<button type="submit"  class="btn bg-transparent" name="language" value="cn" title="中国"><img src="static/img/China.png" /></button>
+	<div class="container">
+	    <form method="POST" action="{{url_for('authenticate_user')}}" class="was-validated">
+			<div class="form-group">			
+				<button type="button" onclick="change_language(this)" class="btn bg-transparent" name="language" value="ru" title="Русский"><img src="static/img/Russia.png" /></button>
+				<button type="button" onclick="change_language(this)" class="btn bg-transparent" name="language" value="en" title="English"><img src="static/img/UnitedKingdom.png" /></button>
+				<button type="button" onclick="change_language(this)" class="btn bg-transparent" name="language" value="cn" title="中国"><img src="static/img/China.png" /></button>
+			</div>
+			
+			<div>
+				<h1>Portal login form</h1>
+			</div>		 
+				{% if exception_message %}
+					<div class="alert alert-warning alert-dismissible">
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+						<strong>Warning!</strong> {{exception_message}}
+					</div>
+				{% endif %}
+			<div class="form-group">
+			    <label for="uname">{{translations.username}}:</label>
+			    <input type="text" class="form-control" id="uname" placeholder="Enter username" name="uname" 
+				    title="Should be 3-30 symbols long"
+				    pattern="{{validations.uname}}"
+			        required>
+			    <div class="valid-feedback">Valid.</div>
+			    <div class="invalid-feedback">{{translations.please_fill_out_this_field}}</div>
+			</div>
+			<div class="form-group">
+			    <label for="pwd">{{translations.password}}:</label>
+			    <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd" 
+				    title="Should be 3-30 symbols long"
+				    pattern="{{validations.pswd}}"
+			        required>
+			    <div class="valid-feedback">Valid.</div>
+			    <div class="invalid-feedback">{{translations.please_fill_out_this_field}}</div>
+			</div>
+			<button type="submit" class="btn btn-primary">Submit</button>
+	    </form>
 	</div>
-    <div>
-        <h1>Portal login form</h1>
-    </div>
- 
-        {% if exception_message %}
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>Warning!</strong> {{exception_message}}
-            </div>
-        {% endif %}
-
-
-    <div class="form-group">
-      <label for="uname">{{translations.username}}:</label>
-      <input type="text" class="form-control" id="uname" placeholder="Enter username" name="uname" 
-          title="Should be 3-30 symbols long"
-          pattern="^\w{3,20}$"
-      required>
-      <div class="valid-feedback">Valid.</div>
-      <div class="invalid-feedback">Please fill out this field.</div>
-    </div>
-    <div class="form-group">
-      <label for="pwd">{{translations.password}}:</label>
-      <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd" 
-          title="Should be 3-30 symbols long"
-          pattern="^.{3,20}$"
-      required>
-      <div class="valid-feedback">Valid.</div>
-      <div class="invalid-feedback">Please fill out this field.</div>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-</div>
-
 </body>
 
 <script>
