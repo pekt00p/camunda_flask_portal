@@ -3,26 +3,29 @@
 
 
 {% block content %}
-
-    <div>
-        <h2>Wind Turbine Name:</h2>
-        <h3>{{variables.response.wtg_name.value}}</h3>
+    <br><br>
+    <div class="form-group" style="border:1px solid #cecece;">
+        <h4>Wind Turbine Name:</h2>
+        <label>{{variables.response.wtg_name.value}}</label>
     </div>
-       <div>
-        <h2>Error Code:</h2>
-        <h3>{{variables.response.fault_code.value}}</h3>
-    </div>
-    </div>
-       <div>
-        <h2>Error Description:</h2>
-        <input type="text" id="input_variable_wtg_fault_description}}" value="{{variables.response.wtg_fault_description.value}}" >
-    </div>
-    <div class="form-check">
-        <h2>Comment:</h2>
-        <textarea  class="form-control is-valid" id="input_variable_user_comment" rows="3" 
-        pattern="^\w{3,20}$"
-        required></textarea>
+    <div class="form-group" style="border:1px solid #cecece;">
+        <h4>Error Code:</h2>
+        <label>{{variables.response.fault_code.value}}</label>
     </div>
 
-{{variables}}
+
+	<div class="form-group" style="border:1px solid #cecece;">
+		<label for="input_variable_wtg_fault_description">Error Description:</label>
+		<input type="text" class="form-control is-valid" id="input_variable_wtg_fault_description"  value="{{variables.response.wtg_fault_description.value}}"				    
+			pattern="^.{3,200}$"
+			required>						
+    </div>
+
+	<div class="form-group" style="border:1px solid #cecece;">
+		<label for="input_variable_user_comment">Comment:</label>
+		<textarea  class="form-control is-valid" id="input_variable_user_comment" rows="3" 
+			pattern="^\w{3,20}$"
+			required></textarea>
+	</div>
+
 {% endblock %}
