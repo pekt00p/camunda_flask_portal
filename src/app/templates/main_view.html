@@ -17,7 +17,7 @@
 
 </head>
 <body>
-<form method="POST" class="was-validated" id="main_form" action="{{url_for('request_processor')}}"> 
+<form method="POST" class="was-validated" id="main_form" action="{{url_for('request_processor')}}" enctype="multipart/form-data"> 
     <div class="jumbotron text-center" style="margin-bottom:0">
     <div class="row">
          <div class="col-sm-3">
@@ -145,7 +145,8 @@
                 request.send();             
     }
     
-    function completeUserTask(task_id){ 
+    function completeUserTask(task_id, is_draft){ 
+
                 var children = document.querySelectorAll('[id^="input_variable_"]'); 
                 var task_variables = {
                     modifications: []
@@ -157,11 +158,16 @@
                         variable_id : variable_id,
                         "value"  : document.getElementById(variable_id).value,
                         "type": "String" 
-    });
+					});
                 }
                 
                 const request = new XMLHttpRequest();
-                request.open('POST', `/complete_task_by_id/${task_id}`);
+				if (is_draft != "False"){
+				   request.open('POST', `/save_draft/${task_id}`);
+                }
+				else{
+				    request.open('POST', `/complete_task_by_id/${task_id}`);
+			    }
                 request.onload = () => {
                     const response = request.responseText;                 
                 }; 

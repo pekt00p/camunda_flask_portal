@@ -94,8 +94,18 @@ def complete_task(task_id):
     response = ut.get_all_user_tasks(connector)
     return render_template('my_tasks.html', my_tasks=response['response'])
 
+@app.route("/save_draft/<task_id>", methods=["POST"])
+def save_draft(task_id):
+    print("REQUEST FOR DRAFT:")
+    print(request.data)
+    response = ut.update_task_variables_by_id(connector, task_id, data=request.data)
+    return response
+
+
 @app.route("/request_processor", methods=['POST'])
 def request_processor(form=None):
+    print('FORM:')
+    print(request.form)
     pass
     
 # Sets values for initial page

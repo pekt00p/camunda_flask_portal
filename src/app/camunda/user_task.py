@@ -50,3 +50,10 @@ def complete_task_by_id(pc:PortalConnector, task_id, data=None):
     json_response = pc.execute_request(url, type='POST', data=data)
     print(json_response)
     return json_response
+
+
+def update_task_variables_by_id(pc:PortalConnector, task_id, data=None):
+    url = '/engine-rest/task/' + str(task_id) + '/variables'
+    json_response = pc.execute_request(url, type='POST', data=data)
+    print(json_response)
+    return json_response
