@@ -29,8 +29,8 @@ def authenticate_user(form=None):
         result = connector.authenticate_user(request.form)
         validations = vl.parse_template('app/templates/login.html')
         validation_result = vl.validate_input(validations, request.form)
-        if (result['status'] != Statuses.Success or not validation_result):
-            if result['status'] == Statuses.Exception:
+        if (result['status'] != Statuses.Success.value or not validation_result):
+            if result['status'] == Statuses.Exception.value:
                 return render_template('login.html',
                                        exception_message=result['message'],
                                        translations=translations,

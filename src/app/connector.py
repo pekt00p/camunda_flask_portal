@@ -25,14 +25,14 @@ class PortalConnector:
                                                    self.camunda_password))
             status_code = user_profile.status_code
             if status_code != 200:
-                return {'status': Statuses.Failed, 'code': status_code}
+                return {'status': Statuses.Failed.value, 'code': status_code}
             else:
-                return {'status': Statuses.Success,
+                return {'status': Statuses.Success.value,
                         'response': json.loads(user_profile.text)}
 
         except Exception as ex:
             print('Engine is down ' + str(ex))
-            return {'status': Statuses.Exception, 'code': '',
+            return {'status': Statuses.Exception.value, 'code': '',
                     'message': 'Mainetnace, please try again later'}
                     
     def execute_request(self, request_url, type='GET', data=None):
@@ -50,8 +50,8 @@ class PortalConnector:
                 json_response = {}
                 if requests_response.text:
                     json_response = json.loads(requests_response.text)
-                return {'status': Statuses.Success, 'response': json_response}
+                return {'status': Statuses.Success.value, 'response': json_response}
             else:
-                return {'status': Statuses.Failed, 'code': status_code}
+                return {'status': Statuses.Failed.value, 'code': status_code}
         except Exception as ex:
-            return {'status': Statuses.Exception, 'code': '', 'message': ex}
+            return {'status': Statuses.Exception.value, 'code': '', 'message': ex}
