@@ -37,6 +37,13 @@
     </div>
 
     <div class="container-fluid">
+    
+<div class="alert alert-success" onclick="$('#alert_success_window').hide()" id="alert_success_window" role="alert" style="display:none;" >Success</div>
+
+<div class="alert alert-danger" onclick="$('#alert_failed_window').hide()" id="alert_failed_window" role="alert" style="display:none;" >Operation FAILED. Try again later.</div>
+
+    
+    
       <div class="row">
         <div class="col-sm-2" style="border:1px solid #cecece;">
              <br><br>
@@ -106,6 +113,26 @@
                 }; 
                 request.send();       
     }
+    
+    
+
+    
+    function unclaimSelectedTasks(){
+        task_for_unclaim = new Array();
+        trs = document.getElementById("sortTable").rows;
+        for(var i=1; i< trs.length; i++){ //skip first record
+            if (document.getElementById("is_selected_"+trs[i].id).checked){
+                task_for_unclaim.push(trs[i].id);
+            }
+        }
+        const request = new XMLHttpRequest();
+                request.open('POST', `/unclaim`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    window.location.reload();
+                }; 
+                request.send(JSON.stringify(task_for_unclaim));       
+    }
 /*    
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('button').forEach(button => {
@@ -146,7 +173,7 @@
     }
     
     function completeUserTask(task_id, is_draft){ 
-
+    
                 var children = document.querySelectorAll('[id^="input_variable_"]'); 
                 var task_variables = {
                     modifications: []
@@ -162,14 +189,26 @@
                 }
                 
                 const request = new XMLHttpRequest();
-				if (is_draft != "False"){
-				   request.open('POST', `/save_draft/${task_id}`);
+				if (is_draft != "False"){                                               
+                   request.open('POST', `/save_draft/${task_id}`);
+                   
                 }
 				else{
+                    
 				    request.open('POST', `/complete_task_by_id/${task_id}`);
 			    }
                 request.onload = () => {
-                    const response = request.responseText;                 
+                    const response = request.responseText; 
+                    if (response == "SUCCESS"){                    
+                        $('#alert_success_window').show();   
+                    }
+                    else {
+                        $('#alert_failed_window').show();
+                    }
+                    if (is_draft == "False"){
+                        window.location.reload();
+                    }
+                                        
                 }; 
                 request.send(JSON.stringify(task_variables));                  
     }

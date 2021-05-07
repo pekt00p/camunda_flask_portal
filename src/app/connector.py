@@ -40,14 +40,16 @@ class PortalConnector:
         try:
             if type == 'GET':        
                 requests_response = requests.get(url, auth=(self.camunda_user_name, self.camunda_password))
-            elif type == 'POST':
- 
-                data = json.loads(data)
-                requests_response = requests.post(url, auth=(self.camunda_user_name, self.camunda_password), json=data)
-                
+            elif type == 'POST': 
+                data = json.dumps(data)
+                print(data)
+                headers = {'Content-type': 'application/json'}
+                requests_response = requests.post(url, auth=(self.camunda_user_name, self.camunda_password), headers=headers, data=data)               
             status_code = requests_response.status_code
             if str(status_code).startswith('2'): # success codes starts with 2, e.g. 200, 201
-                json_response = json.loads(requests_response.text)
+                json_response = {}
+                if requests_response.text:
+                    json_response = json.loads(requests_response.text)
                 return {'status': Statuses.Success, 'response': json_response}
             else:
                 return {'status': Statuses.Failed, 'code': status_code}

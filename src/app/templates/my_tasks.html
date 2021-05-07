@@ -14,7 +14,7 @@
     {%for record in my_tasks%}
 
         <tr id={{record.id}}>
-            <td> <input type="checkbox"></td>
+            <td> <input id="is_selected_{{record.id}}" type="checkbox"></td>
             <td>{{record.name}}<br>
                 {{record.created}}
             </td>
@@ -25,4 +25,10 @@
 
 </tbody>
 </table>
+
+  <div>
+ 
+  <button type="button" onclick="unclaimSelectedTasks()" id="unclaim_task" class="btn btn-primary">Unclaim</button>
+
+  </div>
 

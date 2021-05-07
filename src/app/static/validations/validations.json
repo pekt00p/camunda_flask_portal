@@ -4,6 +4,6 @@
     }, 
 	{
         "key": "uname",
-        "validation_pattern": "^\\w{1,20}$"
+        "validation_pattern": "^\\w{3,20}$"
     }
 ]

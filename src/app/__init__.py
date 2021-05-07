@@ -9,7 +9,7 @@ import logging
 app = Flask(__name__)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]2/'
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', filename='app/logs/execution.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', filename='execution.log', encoding='utf-8', level=logging.DEBUG)
 tr = Translations()
 vl = Validations()
 connector = PortalConnector()
@@ -18,7 +18,7 @@ new_start = True
 def authenticate_user(form=None):
 
     if 'language' not in session:
-        session['language'] = 'cn' #default
+        session['language'] = 'en' #default
     if request.method == 'POST':
         print(request.form)
     translations = tr.parse_template('app/templates/login.html', session['language'])
@@ -75,7 +75,7 @@ def get_task_form(task_id):
         return render_template(task['response']['formKey'],
                                variables=response, task_id=task_id)
     else: 
-         logging.error("Templete " + str(task['response']['formKey']) + 
+         logging.error("Template " + str(task['response']['formKey']) + 
              " not found for process " + str(task['response']['processDefinitionId']))
          return render_template('errors/404_form_not_found.html')
                            
@@ -88,18 +88,20 @@ def get_process_history_by_id(process_instance_id):
             
 @app.route("/complete_task_by_id/<task_id>", methods=["POST"])
 def complete_task(task_id):   
-    #response = ut.complete_task_by_id(connector, task_id, data=data)
-    print("REQUEST:")
-    print(request.data)
-    response = ut.get_all_user_tasks(connector)
-    return render_template('my_tasks.html', my_tasks=response['response'])
+    response = ut.complete_task_by_id(connector, task_id, data=request.data)
+    return Statuses.Success.value
 
 @app.route("/save_draft/<task_id>", methods=["POST"])
 def save_draft(task_id):
-    print("REQUEST FOR DRAFT:")
-    print(request.data)
     response = ut.update_task_variables_by_id(connector, task_id, data=request.data)
-    return response
+
+    return Statuses.Success.value
+    
+@app.route("/unclaim", methods=["POST"])
+def unclaim():
+
+    response = ut.update_task_variables_by_id(connector, task_id, data=request.data)
+    return Statuses.Success.value
 
 
 @app.route("/request_processor", methods=['POST'])

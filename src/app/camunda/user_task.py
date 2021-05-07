@@ -2,7 +2,7 @@ __author__ = 'Oleg Ladizhensky'
 
 from app.connector import PortalConnector
 import datetime
-
+import json
 
 def get_all_user_tasks(pc:PortalConnector):
     url = '/engine-rest/task?assignee=' + str(pc.camunda_user_name)
@@ -47,13 +47,20 @@ def get_task_vars_by_id(pc:PortalConnector, task_id):
     
 def complete_task_by_id(pc:PortalConnector, task_id, data=None):
     url = '/engine-rest/task/' + str(task_id) + '/complete'
+    data = json.loads(data.decode("utf-8"))
     json_response = pc.execute_request(url, type='POST', data=data)
-    print(json_response)
+    print("COMPLETE:" + str(json_response))
     return json_response
 
 
 def update_task_variables_by_id(pc:PortalConnector, task_id, data=None):
     url = '/engine-rest/task/' + str(task_id) + '/variables'
-    json_response = pc.execute_request(url, type='POST', data=data)
-    print(json_response)
+    #make data transformation for Camunda
+    data = json.loads(data.decode("utf-8"))
+    modifications = {}
+    all_mods = {}
+    for modification in data['modifications']:
+        modifications[modification["variable_id"]] = {"value":modification['value'], "type":modification['type']}
+    all_mods = {"modifications":modifications}
+    json_response = pc.execute_request(url, type='POST', data=all_mods)
     return json_response
