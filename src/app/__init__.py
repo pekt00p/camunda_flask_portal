@@ -61,20 +61,29 @@ def logout():
 @app.route("/my_tasks_button", methods=["POST"])
 def get_my_tasks():
     response = ut.get_all_user_tasks(connector)
-    return render_template('my_tasks.html', my_tasks=response['response'])
+    return render_template('my_tasks.html', my_tasks=response['response'], view_type='user')
+    
+@app.route("/group_tasks_button", methods=["POST"])
+def get_group_tasks():
+    response = ut.get_group_tasks(connector)
+    return render_template('my_tasks.html', my_tasks=response['response'], view_type='group')
     
 @app.route("/my_requests_button", methods=["POST"])
 def get_my_requests():
     response = hs.get_processes_started_by_user(connector)
     return render_template('my_requests.html', my_requests=response['response'])
+    
+@app.route("/get_group_task_by_id/<task_id>", methods=["POST"])
+def get_group_task_by_id(task_id):    
+    return get_task_form(task_id, view_type='group')
 
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
-def get_task_form(task_id):
+def get_task_form(task_id, view_type='user'):
     response = ut.get_task_vars_by_id(connector, task_id)
     task = ut.get_user_task_by_id(connector, task_id)
     if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):    
         return render_template(task['response']['formKey'],
-                               variables=response, task_id=task_id)
+                               variables=response, task_id=task_id, view_type=view_type)
     else: 
          logging.error("Template " + str(task['response']['formKey']) + 
              " not found for process " + str(task['response']['processDefinitionId']))
@@ -105,7 +114,16 @@ def unclaim():
         if (response['status']!=Statuses.Success.value):
             #breaking the loop if at least one fails
             return response['status']
-    return response['status']
+    return Statuses.Success.value
+    
+@app.route("/claim", methods=["POST"])
+def claim():
+    for task_id in json.loads(request.data):
+        response = ut.claim(connector, task_id[0])
+        if (response['status']!=Statuses.Success.value):
+            #breaking the loop if at least one fails
+            return response['status']
+    return Statuses.Success.value
 
 
 @app.route("/request_processor", methods=['POST'])

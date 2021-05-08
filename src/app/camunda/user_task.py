@@ -30,7 +30,7 @@ def count_all_group_tasks(pc:PortalConnector):
     json_response = pc.execute_request(url)
     return json_response
     
-def get_all_user_group_tasks(pc:PortalConnector):
+def get_group_tasks(pc:PortalConnector):
     url = '/engine-rest/task?withCandidateGroups=true'
     json_response = pc.execute_request(url)
     return json_response
@@ -49,6 +49,13 @@ def unclaim(pc:PortalConnector, task_id):
     url = '/engine-rest/task/' + str(task_id) + '/unclaim'
     print(url)
     json_response = pc.execute_request(url, type='POST', data={})
+    return json_response
+
+def claim(pc:PortalConnector, task_id):
+    url = '/engine-rest/task/' + str(task_id) + '/claim'
+    print(url)
+    data = {"userId": str(pc.camunda_user_name)}
+    json_response = pc.execute_request(url, type='POST', data=data)
     return json_response
     
 def complete_task_by_id(pc:PortalConnector, task_id, data=None):

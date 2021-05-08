@@ -8,7 +8,7 @@
       <bpmn:incoming>Flow_0ofzgts</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0p5bmbl" sourceRef="StartEvent_1" targetRef="Activity_Set_Variables" />
-    <bpmn:userTask id="Activity_Check_Wind_Turbine" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo" camunda:priority="10">
+    <bpmn:userTask id="Activity_Check_Wind_Turbine" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo" camunda:candidateUsers="demo" camunda:candidateGroups="demo" camunda:priority="10">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="regexp" value="asdf" />

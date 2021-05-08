@@ -52,7 +52,7 @@
                  My Tasks <span id="user_task_count" class="badge badge-light">{{user_task_count}}</span>
              </button>
              <br><br><br>
-             <button type="button" id="group_tasks_button" class="btn btn-warning">
+             <button type="button" onclick="setTasksView(this, 'get_group_task_by_id')" id="group_tasks_button" class="btn btn-warning">
                  Group Tasks <span id="group_task_count" class="badge badge-light">{{group_task_count}}</span>
              </button>
              <br><br><br>
@@ -95,7 +95,7 @@
             document.getElementById('record_list').innerHTML = response;
             $('#sortTable').DataTable();           
             $('#sortTable tbody tr').click(function() {
-            getUserTask(this, resource_path);           
+            getTasks(this, resource_path);           
             $(this).addClass('active').siblings().removeClass('active');
         });
             
@@ -117,7 +117,7 @@
     
 
     
-    function unclaimSelectedTasks(task_id){
+    function claimUnclaimSelectedTasks(action, task_id){
 
         task_for_unclaim = new Array();
         if(task_id != null){
@@ -134,13 +134,19 @@
             }
         }
         const request = new XMLHttpRequest();
-                request.open('POST', `/unclaim`);
+                request.open('POST', `/${action}`);
                 request.onload = () => {
                     const response = request.responseText;
                     if (response == "SUCCESS"){                    
                         $('#alert_success_window').show(); 
-                        changeBadgeValue("user_task_count",-task_for_unclaim.length);          
-                        changeBadgeValue("group_task_count",task_for_unclaim.length);  
+                        if (action == "unclaim"){
+                            changeBadgeValue("user_task_count", -task_for_unclaim.length);          
+                            changeBadgeValue("group_task_count", task_for_unclaim.length);  
+                        }
+                        else if (action == "claim"){
+                            changeBadgeValue("user_task_count", task_for_unclaim.length);          
+                            changeBadgeValue("group_task_count", -task_for_unclaim.length);  
+                        }
                         document.getElementById('process_form').innerHTML = "";                        
                         for(var i=0; i<task_for_unclaim.length; i++){      
                             row_for_deletion = document.getElementById(task_for_unclaim[i]);
@@ -168,7 +174,7 @@
                             $('#sortTable').DataTable();
                             
                             $('#sortTable tbody tr').click(function() {
-                            getUserTask(this);
+                            getTasks(this);
                    
                     $(this).addClass('active').siblings().removeClass('active');
                 });
@@ -180,7 +186,7 @@
     });
 */
     
-    function getUserTask(obj, resource_path){
+    function getTasks(obj, resource_path){
                 const request = new XMLHttpRequest();
                 request.open('POST', `/${resource_path}/${obj.id}`);
                 request.onload = () => {

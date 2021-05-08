@@ -42,7 +42,6 @@ class PortalConnector:
                 requests_response = requests.get(url, auth=(self.camunda_user_name, self.camunda_password))
             elif type == 'POST': 
                 data = json.dumps(data)
-                print('REQUEST: '+data)
                 headers = {'Content-type': 'application/json'}
                 requests_response = requests.post(url, auth=(self.camunda_user_name, self.camunda_password), headers=headers, data=data)               
             status_code = requests_response.status_code
