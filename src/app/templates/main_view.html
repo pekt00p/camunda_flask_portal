@@ -49,11 +49,11 @@
              <br><br>
 
              <button type="button" onclick="setTasksView(this, 'get_task_by_id')" id="my_tasks_button" class="btn btn-danger">
-                 My Tasks <span class="badge badge-light">{{user_task_count}}</span>
+                 My Tasks <span id="user_task_count" class="badge badge-light">{{user_task_count}}</span>
              </button>
              <br><br><br>
              <button type="button" id="group_tasks_button" class="btn btn-warning">
-                 Group Tasks <span class="badge badge-light">{{group_task_count}}</span>
+                 Group Tasks <span id="group_task_count" class="badge badge-light">{{group_task_count}}</span>
              </button>
              <br><br><br>
              <button type="button" onclick="setTasksView(this, 'get_process_history_by_id')" id="my_requests_button" class="btn btn-primary">
@@ -117,19 +117,39 @@
     
 
     
-    function unclaimSelectedTasks(){
+    function unclaimSelectedTasks(task_id){
+
         task_for_unclaim = new Array();
-        trs = document.getElementById("sortTable").rows;
-        for(var i=1; i< trs.length; i++){ //skip first record
-            if (document.getElementById("is_selected_"+trs[i].id).checked){
-                task_for_unclaim.push(trs[i].id);
+        if(task_id != null){
+            task_for_unclaim.push([task_id]);
+            
+        }
+
+        else{
+            trs = document.getElementById("sortTable").rows;
+            for(var i=1; i< trs.length; i++){ //skip first record
+                if (document.getElementById("is_selected_"+trs[i].id).checked){
+                    task_for_unclaim.push([trs[i].id]);
+                }
             }
         }
         const request = new XMLHttpRequest();
                 request.open('POST', `/unclaim`);
                 request.onload = () => {
                     const response = request.responseText;
-                    window.location.reload();
+                    if (response == "SUCCESS"){                    
+                        $('#alert_success_window').show(); 
+                        changeBadgeValue("user_task_count",-task_for_unclaim.length);          
+                        changeBadgeValue("group_task_count",task_for_unclaim.length);  
+                        document.getElementById('process_form').innerHTML = "";                        
+                        for(var i=0; i<task_for_unclaim.length; i++){      
+                            row_for_deletion = document.getElementById(task_for_unclaim[i]);
+                            document.getElementById("sortTable").deleteRow(row_for_deletion.rowIndex);
+                        }                        
+                    }
+                    else {
+                        $('#alert_failed_window').show();
+                    } 
                 }; 
                 request.send(JSON.stringify(task_for_unclaim));       
     }
@@ -170,6 +190,11 @@
                     $('#sortTable').DataTable();
                 }; 
                 request.send();             
+    }
+    
+    function changeBadgeValue(badge_id, value){
+         
+         document.getElementById(badge_id).innerText = parseInt(document.getElementById(badge_id).innerText) + parseInt(value);
     }
     
     function completeUserTask(task_id, is_draft){ 

@@ -4,6 +4,7 @@ from app.portal_constants import Statuses
 from app.helpers import Translations, Validations
 import app.camunda.user_task as ut
 import app.camunda.history_service as hs
+import json
 from os import path
 import logging
 app = Flask(__name__)
@@ -99,9 +100,12 @@ def save_draft(task_id):
     
 @app.route("/unclaim", methods=["POST"])
 def unclaim():
-
-    response = ut.update_task_variables_by_id(connector, task_id, data=request.data)
-    return Statuses.Success.value
+    for task_id in json.loads(request.data):
+        response = ut.unclaim(connector, task_id[0])
+        if (response['status']!=Statuses.Success.value):
+            #breaking the loop if at least one fails
+            return response['status']
+    return response['status']
 
 
 @app.route("/request_processor", methods=['POST'])

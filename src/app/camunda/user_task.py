@@ -44,6 +44,12 @@ def get_task_vars_by_id(pc:PortalConnector, task_id):
     url = '/engine-rest/task/' + str(task_id) + '/variables'
     json_response = pc.execute_request(url)
     return json_response
+
+def unclaim(pc:PortalConnector, task_id):
+    url = '/engine-rest/task/' + str(task_id) + '/unclaim'
+    print(url)
+    json_response = pc.execute_request(url, type='POST', data={})
+    return json_response
     
 def complete_task_by_id(pc:PortalConnector, task_id, data=None):
     url = '/engine-rest/task/' + str(task_id) + '/complete'
