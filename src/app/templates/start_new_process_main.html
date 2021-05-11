@@ -1,0 +1,36 @@
+
+<section class="content">
+
+  <div id="process">
+      {% block content %}{% endblock %}
+  </div>
+  <div>
+ 
+ 
+ 
+  <button type="button"  id="show " class="btn btn-outline-info" data-toggle="modal" data-target="#modalProcessInfo">Info</button>
+  <button type="button" onclick="submitNewProcess('{{process.key}}')" id="submit_new_process_instance" class="btn btn-outline-success">Submit</button>
+  
+	<!-- Modal -->
+<div class="modal fade" id="modalProcessInfo" tabindex="-1" role="dialog" aria-labelledby="modalProcessInfoTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalProcessInfoTitle">Process description</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{process.description}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+</section>

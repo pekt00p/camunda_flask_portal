@@ -40,7 +40,7 @@
     
 <div class="alert alert-success" onclick="$('#alert_success_window').hide()" id="alert_success_window" role="alert" style="display:none;" >Success</div>
 
-<div class="alert alert-danger" onclick="$('#alert_failed_window').hide()" id="alert_failed_window" role="alert" style="display:none;" >Operation FAILED. Try again later.</div>
+<div class="alert alert-danger" onclick="$('#alert_failed_window').hide()" id="alert_failed_window" role="alert" style="display:none;" >Operation FAILED.</div>
 
     
     
@@ -60,12 +60,12 @@
                  My Requests <span class="badge badge-light"></span>
              </button>
              <br><br><br>
-             <button type="button" id="notifications_button" class="btn btn-info">
+             <button  id="notifications_button" class="btn btn-info">
                  Notifications <span class="badge badge-light"></span>
              </button>
              <br><br><br>
-             <button type="button" id="create_requests_button" class="btn btn-success">
-                 Create Requests <span class="badge badge-light"></span>
+             <button type="button" type="button" onclick="setTasksView(this, '')" id="create_request_button" class="btn btn-success">
+                 Create Request <span class="badge badge-light"></span>
              </button>
              <br><br><br>
 
@@ -159,32 +159,6 @@
                 }; 
                 request.send(JSON.stringify(task_for_unclaim));       
     }
-/*    
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('button').forEach(button => {
-            button.onclick = () => {
-                const request = new XMLHttpRequest();
-                request.open('POST', `/${button.id}`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    document.getElementById('record_list').innerHTML = response;
-                   
-
-
-                            $('#sortTable').DataTable();
-                            
-                            $('#sortTable tbody tr').click(function() {
-                            getTasks(this);
-                   
-                    $(this).addClass('active').siblings().removeClass('active');
-                });
-                    
-                }; 
-                request.send();                    
-            };
-        });
-    });
-*/
     
     function getTasks(obj, resource_path){
                 const request = new XMLHttpRequest();
@@ -203,9 +177,9 @@
          document.getElementById(badge_id).innerText = parseInt(document.getElementById(badge_id).innerText) + parseInt(value);
     }
     
-    function completeUserTask(task_id, is_draft){ 
-    
-                var children = document.querySelectorAll('[id^="input_variable_"]'); 
+	
+	function getInputVariables(){
+	var children = document.querySelectorAll('[id^="input_variable_"]'); 
                 var task_variables = {
                     modifications: []
                 }
@@ -218,6 +192,32 @@
                         "type": "String" 
 					});
                 }
+				
+				return task_variables;
+	
+	}
+	
+	function submitNewProcess(process_key){
+	    task_variables = getInputVariables();
+		 if(document.getElementById('main_form').checkValidity() == true){
+				const request = new XMLHttpRequest();
+                request.open('POST', `/submit_new_process/${process_key}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    document.getElementById('process_form').innerHTML = response; 
+                }; 
+				
+                request.send(JSON.stringify(task_variables)); 
+		}
+		else{
+		    $('#alert_failed_window').show();
+		}
+
+	}
+	
+    function completeUserTask(task_id, is_draft){ 
+    
+                task_variables = getInputVariables();
                 
                 const request = new XMLHttpRequest();
 				if (is_draft != "False"){                                               
@@ -243,7 +243,28 @@
                 }; 
                 request.send(JSON.stringify(task_variables));                  
     }
+	
 
+    function showProcessInstanceDescription(button){		
+		        const request = new XMLHttpRequest();
+                request.open('POST', `/get_process_description/${button.id}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    document.getElementById('process_form').innerHTML = response; 
+                }; 
+                request.send(); 
+    }
+	
+	
+	function startNewProcessInstance(button){		
+		        const request = new XMLHttpRequest();
+                request.open('POST', `/start_new_process_instance/${button.id}`);
+                request.onload = () => {
+                    const response = request.responseText;
+                    document.getElementById('process_form').innerHTML = response; 
+                }; 
+                request.send(); 
+    }
 </script>
 
 

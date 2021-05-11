@@ -1,0 +1,27 @@
+{% extends 'start_new_process_main.html' %}
+
+
+
+{% block content %}
+    <br><br>
+
+
+
+	<div class="form-group" style="border:1px solid #cecece;">
+		<label for="input_variable_wtg_fault_description">Error Description:</label>
+		<input type="text" class="form-control is-valid" id="input_variable_wtg_fault_description_init"  
+          
+			pattern="^.{3,200}$"
+			required>						
+    </div>
+
+	<div class="form-group" style="border:1px solid #cecece;">
+		<label for="input_variable_user_comment">Comment:</label>
+		<textarea  class="form-control is-valid" id="input_variable_user_comment_init" rows="3" value="Default"
+			pattern="^\w{3,20}$"
+			required></textarea>
+	</div>
+	
+	
+
+{% endblock %}

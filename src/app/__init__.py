@@ -4,6 +4,7 @@ from app.portal_constants import Statuses
 from app.helpers import Translations, Validations
 import app.camunda.user_task as ut
 import app.camunda.history_service as hs
+import app.camunda.process_service as ps
 import json
 from os import path
 import logging
@@ -92,7 +93,7 @@ def get_task_form(task_id, view_type='user'):
                            
 @app.route("/get_process_history_by_id/<process_instance_id>", methods=["POST"])
 def get_process_history_by_id(process_instance_id):
-    response = hs.get_process_history_by_id(connector, process_instance_id)
+    response = s.get_process_history_by_id(connector, process_instance_id)
     return render_template('process_instance_history.html',
                            variables=response['response'])            
             
@@ -100,6 +101,16 @@ def get_process_history_by_id(process_instance_id):
 def complete_task(task_id):   
     response = ut.complete_task_by_id(connector, task_id, data=request.data)
     return Statuses.Success.value
+    
+
+
+@app.route("/submit_new_process/<process_key>", methods=["POST"])
+def submit_new_process(process_key):   
+    response = ps.submit_new_process(connector, process_key, data=request.data)
+    print(response)
+    if response['status'] == Statuses.Success.value:
+        return render_template('new_process_success.html', response=response['response'])
+    return Statuses.Failed.value
 
 @app.route("/save_draft/<task_id>", methods=["POST"])
 def save_draft(task_id):
@@ -125,6 +136,22 @@ def claim():
             return response['status']
     return Statuses.Success.value
 
+@app.route("/create_request_button", methods=["POST"])
+def get_user_allowed_processes():
+    response = ps.get_user_allowed_processes(connector)
+    return render_template('user_processes.html', processes=response['response'])
+    
+@app.route("/get_process_description/<process_key>", methods=["POST"])
+def get_process_description(process_key):
+    response = ps.get_user_allowed_process_by_key(connector, process_key)
+    return render_template('process_description.html', process=response['response'])
+
+
+@app.route("/start_new_process_instance/<process_key>", methods=["POST"])
+def start_new_process_instance(process_key):
+    process_start_form_name = ps.get_process_start_form(connector, process_key)['response']['key']
+    process_definition = ps.get_process_definition(connector, process_key)
+    return render_template(process_start_form_name, process=process_definition['response'])
 
 @app.route("/request_processor", methods=['POST'])
 def request_processor(form=None):
