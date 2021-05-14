@@ -1,9 +1,11 @@
 [{
         "key": "pswd",
         "validation_pattern": "^.{3,20}$"
-    }, 
-	{
+    }, {
         "key": "uname",
         "validation_pattern": "^\\w{3,20}$"
+    }, {
+        "key": "required_text",
+        "validation_pattern": "^\\w{1,200}$"
     }
 ]
