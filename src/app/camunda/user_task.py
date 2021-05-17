@@ -23,7 +23,7 @@ def get_user_profile(pc: PortalConnector, session=None):
 
 
 def count_all_user_tasks(pc: PortalConnector, session=None):
-    url = '/engine-rest/task/count?assigned=true'
+    url = '/engine-rest/task/count?assignee=' + str(session['username'])
     json_response = pc.execute_request(url, session=session)
     return json_response
 
@@ -54,23 +54,21 @@ def get_task_vars_by_id(pc: PortalConnector, task_id, session=None):
 
 def unclaim(pc: PortalConnector, task_id, session=None):
     url = '/engine-rest/task/' + str(task_id) + '/unclaim'
-    print(url)
-    json_response = pc.execute_request(url, type='POST', data={}, session=None)
+    json_response = pc.execute_request(url, request_type='POST', data={}, session=session)
     return json_response
 
 
 def claim(pc: PortalConnector, task_id, session=None):
     url = '/engine-rest/task/' + str(task_id) + '/claim'
-    print(url)
     data = {"userId": str(session['username'])}
-    json_response = pc.execute_request(url, type='POST', data=data, session=None)
+    json_response = pc.execute_request(url, request_type='POST', data=data, session=session)
     return json_response
 
 
 def complete_task_by_id(pc: PortalConnector, task_id, data=None, session=None):
     url = '/engine-rest/task/' + str(task_id) + '/complete'
     data = json.loads(data.decode("utf-8"))
-    json_response = pc.execute_request(url, type='POST', data=data, session=None)
+    json_response = pc.execute_request(url, request_type='POST', data=data, session=session)
     print("COMPLETE:" + str(json_response))
     return json_response
 
@@ -80,9 +78,8 @@ def update_task_variables_by_id(pc: PortalConnector, task_id, data=None, session
     # make data transformation for Camunda
     data = json.loads(data.decode("utf-8"))
     modifications = {}
-    all_mods = {}
     for modification in data['modifications']:
         modifications[modification["variable_id"]] = {"value": modification['value'], "type": modification['type']}
     all_mods = {"modifications": modifications}
-    json_response = pc.execute_request(url, type='POST', data=all_mods, session=None)
+    json_response = pc.execute_request(url, request_type='POST', data=all_mods, session=session)
     return json_response

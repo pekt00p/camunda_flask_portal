@@ -7,14 +7,15 @@
         </button>
       </h2>
     </div>
-
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">		 
       <div class="card-body">
 	  
 	  {%for process in processes%}
-	  <div>
-	      <button id="{{process.key}}" type="button" onclick="startNewProcessInstance(this)"  class="btn btn-primary">{{process.name}}</button>
-      </div>
+        {% if process.key.split('_')[0] == 'Utilities' %}
+          <div>
+              <button id="{{process.key}}" type="button" onclick="startNewProcessInstance(this)"  class="btn btn-primary">{{process.name}}</button>
+          </div>
+        {% endif %}
       {%endfor%}
           
 	  </div>
@@ -30,7 +31,7 @@
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
       <div class="card-body">
-        <button type="button"  id="my_requests" class="btn btn-primary"> My Requests </button>
+        <button type="button"  id="my_requests" name="my_requests" class="btn btn-primary"> My Requests </button>
 	  </div>
     </div>
   </div>

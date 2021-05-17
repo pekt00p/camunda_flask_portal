@@ -8,7 +8,7 @@ import re
 
 
 class Translations:
-    pattern = '{{translations\..*}}'
+    pattern = '{{translations\\..*}}'
     translation_data = {}  # common translations dict
     translation_raw_data = ''  # output of translations file
 
@@ -22,8 +22,8 @@ class Translations:
             for translation in self.translation_raw_data:
                 self.translation_data[translation['key']] = translation['translations']
 
-        except:
-            print('Translation file exception:' + str(sys.exc_info()[0]))
+        except Exception as e:
+            print('Translation file exception:' + str(e))
 
     def parse_template(self, template, language):
         translation_dict = {}  # local translations dict
@@ -41,7 +41,7 @@ class Translations:
 
 
 class Validations:
-    pattern = '{{validations\..*}}'
+    pattern = '{{validations\\..*}}'
     validation_data = {}  # common translations dict
     validation_raw_data = ''  # output of translations file
 
@@ -70,8 +70,8 @@ class Validations:
                 for tag in tags:
                     validation_dict[tag] = self.validation_data[tag]
                 return validation_dict
-        except:
-            print('Template val file exception:' + str(sys.exc_info()[0]))
+        except Exception as e:
+            print('Template val file exception:' + str(e))
 
     def validate_input(self, user_form, validation_dict):
         # Check user input on server side. Prevent XSS

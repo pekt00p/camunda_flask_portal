@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0wmi77x" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.5.0">
-  <bpmn:process id="Process_Wind_Farm_Manager" name="Wind Farm Manager" isExecutable="true" camunda:candidateStarterGroups="accounting" camunda:versionTag="1">
-    <bpmn:documentation>&lt;h1&gt;Wind farm manager&lt;/h1&gt;
-Process for managing wind farm.
+  <bpmn:process id="Utilities_Wind_Farm_Manager" name="Wind Farm Manager" isExecutable="true" camunda:candidateStarterGroups="accounting" camunda:versionTag="1">
+    <bpmn:documentation>Wind farm manager
 
-</bpmn:documentation>
+Process for managing wind farm.</bpmn:documentation>
     <bpmn:extensionElements>
       <camunda:properties>
         <camunda:property name="extention_name" value="extension_value" />
@@ -47,7 +46,7 @@ execution.setVariable("fault_code", "Nordex_TEMP_22");</bpmn:script>
     <bpmn:sequenceFlow id="Flow_0ofzgts" sourceRef="Activity_Check_Wind_Turbine_Result" targetRef="Event_1t6bki4" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_Wind_Farm_Manager">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Utilities_Wind_Farm_Manager">
       <bpmndi:BPMNEdge id="Flow_0ofzgts_di" bpmnElement="Flow_0ofzgts">
         <di:waypoint x="750" y="117" />
         <di:waypoint x="802" y="117" />

@@ -111,6 +111,7 @@ def get_process_history_by_id(process_instance_id):
 @app.route("/complete_task_by_id/<task_id>", methods=["POST"])
 def complete_task(task_id):
     response = ut.complete_task_by_id(connector, task_id=task_id, data=request.data)
+    assert response == response['status'] == Statuses.Success.value, response['status']
     return Statuses.Success.value
 
 
@@ -120,11 +121,17 @@ def submit_new_process(process_key):
 
     process_start_form_name = ps.get_process_start_form(connector, session=session,
                                                         process_key=process_key)['response']['key']
-    validations = vl.parse_template(process_start_form_name)
+    validations = vl.parse_template('app/templates/' + str(process_start_form_name))
 
-    validation_result = vl.validate_input(validations, request.data)
+    form_input = {}
+
+    for fi in json.loads(request.data.decode("utf-8"))['modifications']:
+        form_input[fi['variable_id']] = fi['value']
+    print(form_input)
+    validation_result = vl.validate_input(validations, form_input)
+    assert validation_result, 'Validation error'
     response = ps.submit_new_process(connector, process_key, data=request.data)
-    print(response)
+
     if response['status'] == Statuses.Success.value:
         return render_template('new_process_success.html', response=response['response'])
     return Statuses.Failed.value
@@ -134,14 +141,14 @@ def submit_new_process(process_key):
 def save_draft(task_id):
     # For draft it is allowed to skip validation on required fields.
     response = ut.update_task_variables_by_id(connector, task_id=task_id, data=request.data)
-
+    assert response['status'] == Statuses.Success.value, response['status']
     return Statuses.Success.value
 
 
 @app.route("/unclaim", methods=["POST"])
 def unclaim():
     for task_id in json.loads(request.data):
-        response = ut.unclaim(connector, task_id[0])
+        response = ut.unclaim(connector, task_id=task_id[0], session=session)
         if response['status'] != Statuses.Success.value:
             # breaking the loop if at least one fails
             return response['status']
@@ -151,7 +158,7 @@ def unclaim():
 @app.route("/claim", methods=["POST"])
 def claim():
     for task_id in json.loads(request.data):
-        response = ut.claim(connector, task_id[0])
+        response = ut.claim(connector, task_id=task_id[0], session=session)
         if response['status'] != Statuses.Success.value:
             # breaking the loop if at least one fails
             return response['status']
@@ -160,7 +167,7 @@ def claim():
 
 @app.route("/create_request_button", methods=["POST"])
 def get_user_allowed_processes():
-    response = ps.get_user_allowed_processes(connector, session)
+    response = ps.get_user_allowed_processes(connector, session=session)
     return render_template('user_processes.html', processes=response['response'])
 
 
@@ -175,15 +182,13 @@ def start_new_process_instance(process_key):
     # Opens the form of new process.
     process_start_form_name = ps.get_process_start_form(connector, session=session,
                                                         process_key=process_key)['response']['key']
-    validations = vl.parse_template('process_start_form_name')
+    validations = vl.parse_template('app/templates/' + str(process_start_form_name))
     process_definition = ps.get_process_definition(connector, session=session, process_key=process_key)
     return render_template(process_start_form_name, process=process_definition['response'], validations=validations)
 
 
 @app.route("/request_processor", methods=['POST'])
-def request_processor(form=None):
-    print('FORM:')
-    print(request.form)
+def request_processor():
     pass
 
 
