@@ -94,7 +94,7 @@ def get_task_form(task_id, view_type='user'):
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
     if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):
         return render_template(task['response']['formKey'],
-                               variables=response, task_id=task_id, view_type=view_type)
+                               variables=response, task_id=task_id, view_type=view_type, task=task['response'])
     else:
         logging.error("Template " + str(task['response']['formKey']) +
                       " not found for process " + str(task['response']['processDefinitionId']))
@@ -104,8 +104,8 @@ def get_task_form(task_id, view_type='user'):
 @app.route("/get_process_history_by_id/<process_instance_id>", methods=["POST"])
 def get_process_history_by_id(process_instance_id):
     response = hs.get_process_history_by_id(connector, session=session, execution_id=process_instance_id)
-    return render_template('process_instance_history.html',
-                           variables=response['response'])
+    assert response['status'] == Statuses.Success.value, response['status']
+    return render_template('process_instance_history.html', variables=response['response'])
 
 
 @app.route("/complete_task_by_id/<task_id>", methods=["POST"])
@@ -140,7 +140,7 @@ def submit_new_process(process_key):
 @app.route("/save_draft/<task_id>", methods=["POST"])
 def save_draft(task_id):
     # For draft it is allowed to skip validation on required fields.
-    response = ut.update_task_variables_by_id(connector, task_id=task_id, data=request.data)
+    response = ut.update_task_variables_by_id(connector, session=session, task_id=task_id, data=request.data)
     assert response['status'] == Statuses.Success.value, response['status']
     return Statuses.Success.value
 

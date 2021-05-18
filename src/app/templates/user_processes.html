@@ -1,4 +1,5 @@
-<div class="accordion" id="accordionExample">
+<h2>New request</h2>
+<div class="accordion" id="accordionProcesses">
   <div class="card">
     <div class="card-header" id="headingOne">
       <h2 class="mb-0">
@@ -7,13 +8,13 @@
         </button>
       </h2>
     </div>
-    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionProcesses">
       <div class="card-body">
 	  
 	  {%for process in processes%}
         {% if process.key.split('_')[0] == 'Utilities' %}
           <div>
-              <button id="{{process.key}}" type="button" onclick="startNewProcessInstance(this)"  class="btn btn-primary">{{process.name}}</button>
+              <button id="{{process.key}}" type="button" onclick="startNewProcessInstance(this)"  class="btn btn-outline-success btn-block">{{process.name}}</button>
           </div>
         {% endif %}
       {%endfor%}
@@ -29,7 +30,7 @@
         </button>
       </h2>
     </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionProcesses">
       <div class="card-body">
         <button type="button"  id="my_requests" name="my_requests" class="btn btn-primary "> My Requests </button>
 	  </div>
@@ -43,7 +44,7 @@
         </button>
       </h2>
     </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionProcesses">
       <div class="card-body">
         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
       </div>

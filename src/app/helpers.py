@@ -74,7 +74,8 @@ class Validations:
             print('Template val file exception:' + str(e))
 
     def validate_input(self, user_form, validation_dict):
-        # Check user input on server side. Prevent XSS
+        # Check user input validity on server side. Prevent XSS
+        print(validation_dict)
         for key, value in user_form.items():
             if re.search(value, validation_dict[key]):
                 pass

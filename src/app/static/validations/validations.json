@@ -5,7 +5,7 @@
         "key": "uname",
         "validation_pattern": "^\\w{3,20}$"
     }, {
-        "key": "required_user_input_text",
+        "key": "input_variable_wtg_fault_description_init",
         "validation_pattern": "^\\w{1,200}$"
     }
 ]

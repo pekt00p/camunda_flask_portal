@@ -1,6 +1,12 @@
 
 <h2>Execution history: </h2>
     <br>
+    {% if variables[0]  %}
+        <div>
+            Process: {{variables[0].processDefinitionKey}} <br>
+            Instance ID: {{variables[0].processInstanceId}} <br>
+        </div>
+    {% endif %}
     {%for record in variables%}
         <div style="border:1px solid #cecece;">
             <label>{{record.activityName}}</label><br>
