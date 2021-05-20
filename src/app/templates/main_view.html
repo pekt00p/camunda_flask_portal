@@ -75,7 +75,7 @@
 
         </div>
         <div class="col-sm-6" id="process_form" style="border:1px solid #cecece;">
-            
+            <iframe id="process_iframe" width="100%" height="500px"></iframe>
         </div>
       </div>
     </div>
@@ -87,7 +87,13 @@
 </body>
 <script type="text/javascript">  
     <!-- This is initializer code for navigation buttons-->
-    
+
+    $('#process_iframe').on("load", function() {
+        var iframe = $(window.top.document).find("#process_iframe");
+        iframe.height(iframe[0].ownerDocument.body.scrollHeight+'px' );
+    });
+
+
     function setTasksView(button, resource_path){
         const request = new XMLHttpRequest();
         request.open('POST', `/${button.id}`);
@@ -180,7 +186,6 @@
     
 	
 	function getInputVariables(){
-	console.log(document.getElementById("process_form").innerHTML);
 	var children = document.querySelectorAll('[id^="input_variable_"]'); 
                 var task_variables = {
                     modifications: []
@@ -263,7 +268,10 @@
                 request.open('POST', `/start_new_process_instance/${button.id}`);
                 request.onload = () => {
                     const response = request.responseText;
-                    document.getElementById('process_form').innerHTML = response; 
+                    //document.getElementById('process_form').innerHTML = response;
+                   // document.querySelector('iframe').srcdoc = response;
+                    document.getElementById('process_iframe').srcdoc = response;
+
                 }; 
                 request.send(); 
     }

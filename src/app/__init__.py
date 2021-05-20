@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, flash
 from app.connector import PortalConnector
 from app.portal_constants import Statuses
 from app.helpers import Translations, Validations
@@ -8,8 +8,10 @@ import app.camunda.process_service as ps
 import json
 from os import path
 import logging
+import app.forms.common_form_factory as cff
 
 app = Flask(__name__)
+
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]2/'
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', filename='execution.log',
@@ -115,27 +117,27 @@ def complete_task(task_id):
     return Statuses.Success.value
 
 
-@app.route("/submit_new_process/<process_key>", methods=["POST"])
-def submit_new_process(process_key):
-    # Starts new process instance
+@app.route("/submit_process/<process_key>", methods=["POST"])
+def submit_process(form=None, process_key=None):
+    # Submitting only latest version of the process.
+    if form is None:
+        form = cff.factory.get_start_form(process_key)
+        process_start_form_name = ps.get_process_start_form(connector, session=session,
+                                                            process_key=process_key)['response']['key']
+    process_definition = ps.get_process_definition(connector, session=session, process_key=process_key)
+    form.process_key = process_key
+    form.process_name = process_definition['response']['name']
+    form.process_description = process_definition['response']['description']
+    if form.validate():
+        response = ps.submit_new_process(connector, session=session, process_key=process_key, data=request.form)
+        if response['status'] == Statuses.Success.value:
+            return render_template('new_process_success.html', response=response['response'])
+        return Statuses.Failed.value
 
-    process_start_form_name = ps.get_process_start_form(connector, session=session,
-                                                        process_key=process_key)['response']['key']
-    validations = vl.parse_template('app/templates/' + str(process_start_form_name))
-
-    form_input = {}
-
-    for fi in json.loads(request.data.decode("utf-8"))['modifications']:
-        form_input[fi['variable_id']] = fi['value']
-    print(form_input)
-    validation_result = vl.validate_input(validations, form_input)
-    assert validation_result, 'Validation error'
-    response = ps.submit_new_process(connector, process_key, data=request.data)
-
-    if response['status'] == Statuses.Success.value:
-        return render_template('new_process_success.html', response=response['response'])
-    return Statuses.Failed.value
-
+    else:
+        # Internal validation failed, returning to form
+        flash('Input validation error')
+        return render_template(process_start_form_name,  form=form)
 
 @app.route("/save_draft/<task_id>", methods=["POST"])
 def save_draft(task_id):
@@ -178,13 +180,17 @@ def get_process_description(process_key):
 
 
 @app.route("/start_new_process_instance/<process_key>", methods=["POST"])
-def start_new_process_instance(process_key):
+def start_new_process_instance(process_key, form=None):
     # Opens the form of new process.
-    process_start_form_name = ps.get_process_start_form(connector, session=session,
-                                                        process_key=process_key)['response']['key']
-    validations = vl.parse_template('app/templates/' + str(process_start_form_name))
+    if form is None:
+        form = cff.factory.get_start_form(process_key)
+
+    process_start_form_name = ps.get_process_start_form(connector, session=session, process_key=process_key)['response']['key']
     process_definition = ps.get_process_definition(connector, session=session, process_key=process_key)
-    return render_template(process_start_form_name, process=process_definition['response'], validations=validations)
+    form.process_key = process_key
+    form.process_name = process_definition['response']['name']
+    form.process_description = process_definition['response']['description']
+    return render_template(process_start_form_name, form=form, process=process_definition['response'])
 
 
 @app.route("/request_processor", methods=['POST'])

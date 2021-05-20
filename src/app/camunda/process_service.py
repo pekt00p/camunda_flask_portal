@@ -32,10 +32,13 @@ def get_process_definition(pc: PortalConnector, session=None, process_key=None):
 def submit_new_process(pc: PortalConnector, session=None, process_key=None, data=None):
     url = '/engine-rest/process-definition/key/' + str(process_key) + '/start'
     # make data transformation for Camunda
-    data = json.loads(data.decode("utf-8"))
     process_variables = {}
-    for modification in data['modifications']:
-        process_variables[modification["variable_id"]] = {"value": modification['value'], "type": modification['type']}
+    for item in data:
+        if item != "csrf_token":
+            process_variables[item] = {"value": data[item], "type":"String"}
+    #process_variables = {}
+    #for modification in data['modifications']:
+    #    process_variables[modification["variable_id"]] = {"value": modification['value'], "type": modification['type']}
     all_vars = {"variables": process_variables}
-    json_response = pc.execute_request(url, type='POST', session=session, data=all_vars)
+    json_response = pc.execute_request(url, request_type='POST', session=session, data=all_vars)
     return json_response
