@@ -16,7 +16,7 @@ Process for managing wind farm.</bpmn:documentation>
       <bpmn:incoming>Flow_0ofzgts</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0p5bmbl" sourceRef="StartEvent_1" targetRef="Activity_Set_Variables" />
-    <bpmn:userTask id="Activity_Check_Wind_Turbine" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo" camunda:candidateUsers="demo" camunda:candidateGroups="demo" camunda:priority="10">
+    <bpmn:userTask id="CheckWindTurbineUT" name="Check Wind Turbine" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html" camunda:assignee="demo" camunda:candidateUsers="demo" camunda:candidateGroups="demo" camunda:priority="10">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="regexp" value="asdf" />
@@ -32,8 +32,8 @@ Process for managing wind farm.</bpmn:documentation>
 execution.setVariable("input_variable_wtg_fault_description", "Overheat");
 execution.setVariable("fault_code", "Nordex_TEMP_22");</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_0646b54" sourceRef="Activity_Set_Variables" targetRef="Activity_Check_Wind_Turbine" />
-    <bpmn:sequenceFlow id="Flow_0grvtuf" sourceRef="Activity_Check_Wind_Turbine" targetRef="Activity_Check_Wind_Turbine_Result" />
+    <bpmn:sequenceFlow id="Flow_0646b54" sourceRef="Activity_Set_Variables" targetRef="CheckWindTurbineUT" />
+    <bpmn:sequenceFlow id="Flow_0grvtuf" sourceRef="CheckWindTurbineUT" targetRef="Activity_Check_Wind_Turbine_Result" />
     <bpmn:userTask id="Activity_Check_Wind_Turbine_Result" name="Check Result" camunda:formKey="user_forms/wind_farm_management_process/check_status/check_status_v_1_0.html">
       <bpmn:extensionElements>
         <camunda:inputOutput>
@@ -69,7 +69,7 @@ execution.setVariable("fault_code", "Nordex_TEMP_22");</bpmn:script>
       <bpmndi:BPMNShape id="Event_1t6bki4_di" bpmnElement="Event_1t6bki4">
         <dc:Bounds x="802" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_11afuog_di" bpmnElement="Activity_Check_Wind_Turbine">
+      <bpmndi:BPMNShape id="Activity_11afuog_di" bpmnElement="CheckWindTurbineUT">
         <dc:Bounds x="490" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0ux578l_di" bpmnElement="Activity_Set_Variables">

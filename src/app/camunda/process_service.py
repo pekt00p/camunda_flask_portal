@@ -28,6 +28,11 @@ def get_process_definition(pc: PortalConnector, session=None, process_key=None):
     json_response = pc.execute_request(url, session=session)
     return json_response
 
+def get_process_definition_by_id(pc: PortalConnector, session=None, process_def_if=None):
+    url = '/engine-rest/process-definition/' + str(process_def_if)
+    json_response = pc.execute_request(url, session=session)
+    return json_response
+
 
 def submit_new_process(pc: PortalConnector, session=None, process_key=None, data=None):
     url = '/engine-rest/process-definition/key/' + str(process_key) + '/start'

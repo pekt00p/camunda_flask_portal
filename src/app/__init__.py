@@ -92,11 +92,13 @@ def get_group_task_by_id(task_id):
 
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id, view_type='user'):
-    response = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
+    task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
+    process_definition = ps.get_process_definition_by_id(connector, session=session, process_def_if=task['response']['processDefinitionId'])
+    form = cff.factory.get_ut_form(task_vars=task_vars['response'], task=task['response'],
+                                   process_definition=process_definition['response'])
     if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):
-        return render_template(task['response']['formKey'],
-                               variables=response, task_id=task_id, view_type=view_type, task=task['response'])
+        return render_template(task['response']['formKey'], form=form, view_type=view_type)
     else:
         logging.error("Template " + str(task['response']['formKey']) +
                       " not found for process " + str(task['response']['processDefinitionId']))
@@ -137,7 +139,8 @@ def submit_process(form=None, process_key=None):
     else:
         # Internal validation failed, returning to form
         flash('Input validation error')
-        return render_template(process_start_form_name,  form=form)
+        return render_template(process_start_form_name, form=form)
+
 
 @app.route("/save_draft/<task_id>", methods=["POST"])
 def save_draft(task_id):
@@ -185,7 +188,8 @@ def start_new_process_instance(process_key, form=None):
     if form is None:
         form = cff.factory.get_start_form(process_key)
 
-    process_start_form_name = ps.get_process_start_form(connector, session=session, process_key=process_key)['response']['key']
+    process_start_form_name = \
+    ps.get_process_start_form(connector, session=session, process_key=process_key)['response']['key']
     process_definition = ps.get_process_definition(connector, session=session, process_key=process_key)
     form.process_key = process_key
     form.process_name = process_definition['response']['name']
