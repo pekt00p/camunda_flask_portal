@@ -94,7 +94,8 @@ def get_group_task_by_id(task_id):
 def get_task_form(task_id, view_type='user'):
     task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
-    process_definition = ps.get_process_definition_by_id(connector, session=session, process_def_if=task['response']['processDefinitionId'])
+    process_definition = ps.get_process_definition_by_id(connector, session=session,
+                                                         process_def_if=task['response']['processDefinitionId'])
     form = cff.factory.get_ut_form(task_vars=task_vars['response'], task=task['response'],
                                    process_definition=process_definition['response'])
     if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):
@@ -112,12 +113,46 @@ def get_process_history_by_id(process_instance_id):
     return render_template('process_instance_history.html', variables=response['response'])
 
 
-@app.route("/complete_task_by_id/<task_id>", methods=["POST"])
+@app.route("/complete_task/<task_id>", methods=["POST"])
 def complete_task(task_id):
-    response = ut.complete_task_by_id(connector, task_id=task_id, data=request.data)
-    assert response == response['status'] == Statuses.Success.value, response['status']
-    return Statuses.Success.value
+    if 'submit_unclaim_task' in request.form:
+        response = ut.unclaim(connector, task_id=task_id, session=session)
+        if response['status'] != Statuses.Success.value:
+            # breaking the loop if at least one fails
+            return response['status']
+        return Statuses.Success.value
+    elif 'submit_claim_task' in request.form:
+        response = ut.claim(connector, task_id=task_id, session=session)
+        if response['status'] != Statuses.Success.value:
+            # breaking the loop if at least one fails
+            return response['status']
+        return Statuses.Success.value
 
+    elif 'complete_unclaim_task' in request.form:
+        task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
+        task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
+        process_definition = ps.get_process_definition_by_id(connector, session=session,
+                                                             process_def_if=task['response']['processDefinitionId'])
+        form = cff.factory.get_ut_form(task_vars=task_vars['response'], task=task['response'],
+                                       process_definition=process_definition['response'], with_variables=False)
+        print(request.form)
+        if form.validate():
+            response = ut.complete_task_by_id(connector, session=session, task_id=task_id, data=task_vars)
+
+            if response['status'] == Statuses.Success.value:
+                return render_template('user_forms/uf_submitted_success.html', response=response['response'])
+            return Statuses.Failed.value
+        else:
+            # Internal validation failed, returning to form
+            flash('Input validation error')
+            return Statuses.Failed.value
+
+    elif 'submit_save_as_draft' in request.form:
+        response = ut.update_task_variables_by_id(connector, session=session, task_id=task_id, data=request.form)
+        assert response['status'] == Statuses.Success.value, response['status']
+        return Statuses.Success.value
+    else:
+        return Statuses.Failed.value
 
 @app.route("/submit_process/<process_key>", methods=["POST"])
 def submit_process(form=None, process_key=None):
@@ -130,8 +165,12 @@ def submit_process(form=None, process_key=None):
     form.process_key = process_key
     form.process_name = process_definition['response']['name']
     form.process_description = process_definition['response']['description']
+    f = form.proof_file.data
+    #print(f.stream.read())
+
+    #f.save('' + f.filename)
     if form.validate():
-        response = ps.submit_new_process(connector, session=session, process_key=process_key, data=request.form)
+        response = ps.submit_new_process(connector, session=session, process_key=process_key, data=form)
         if response['status'] == Statuses.Success.value:
             return render_template('new_process_success.html', response=response['response'])
         return Statuses.Failed.value
@@ -189,7 +228,7 @@ def start_new_process_instance(process_key, form=None):
         form = cff.factory.get_start_form(process_key)
 
     process_start_form_name = \
-    ps.get_process_start_form(connector, session=session, process_key=process_key)['response']['key']
+        ps.get_process_start_form(connector, session=session, process_key=process_key)['response']['key']
     process_definition = ps.get_process_definition(connector, session=session, process_key=process_key)
     form.process_key = process_key
     form.process_name = process_definition['response']['name']

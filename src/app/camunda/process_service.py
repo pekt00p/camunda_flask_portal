@@ -1,5 +1,7 @@
 __author__ = 'Oleg Ladizhensky'
 
+import base64
+
 from app.connector import PortalConnector
 import json
 
@@ -28,6 +30,7 @@ def get_process_definition(pc: PortalConnector, session=None, process_key=None):
     json_response = pc.execute_request(url, session=session)
     return json_response
 
+
 def get_process_definition_by_id(pc: PortalConnector, session=None, process_def_if=None):
     url = '/engine-rest/process-definition/' + str(process_def_if)
     json_response = pc.execute_request(url, session=session)
@@ -39,10 +42,16 @@ def submit_new_process(pc: PortalConnector, session=None, process_key=None, data
     # make data transformation for Camunda
     process_variables = {}
     for item in data:
-        if item != "csrf_token":
-            process_variables[item] = {"value": data[item], "type":"String"}
-    #process_variables = {}
-    #for modification in data['modifications']:
+        if item.type == 'StringField':
+            process_variables[item.name] = {"value": item.data, "type": "String"}
+        if item.type == 'FileField':
+            process_variables[item.name] = {"value": base64.b64encode(item.data.stream.read()).decode('ascii'),
+                                            "type": "File", "valueInfo":
+                                                {"filename": item.data.filename, "mimetype": item.data.mimetype,
+                                                 "encoding": "UTF-8"}}
+
+    # process_variables = {}
+    # for modification in data['modifications']:
     #    process_variables[modification["variable_id"]] = {"value": modification['value'], "type": modification['type']}
     all_vars = {"variables": process_variables}
     json_response = pc.execute_request(url, request_type='POST', session=session, data=all_vars)

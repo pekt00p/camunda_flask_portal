@@ -67,19 +67,27 @@ def claim(pc: PortalConnector, task_id, session=None):
 
 def complete_task_by_id(pc: PortalConnector, task_id, data=None, session=None):
     url = '/engine-rest/task/' + str(task_id) + '/complete'
-    data = json.loads(data.decode("utf-8"))
-    json_response = pc.execute_request(url, request_type='POST', data=data, session=session)
-    print("COMPLETE:" + str(json_response))
+    # make data transformation for Camunda
+    process_variables = {}
+    for item in data:
+        if item != "csrf_token":
+            process_variables[item] = {"value": data[item], "type": "String"}
+    all_vars = {"variables": process_variables}
+    json_response = pc.execute_request(url, request_type='POST', session=session, data=all_vars)
     return json_response
+
+
+
+
 
 
 def update_task_variables_by_id(pc: PortalConnector, task_id, data=None, session=None):
     url = '/engine-rest/task/' + str(task_id) + '/variables'
     # make data transformation for Camunda
-    data = json.loads(data.decode("utf-8"))
     modifications = {}
-    for modification in data['modifications']:
-        modifications[modification["variable_id"]] = {"value": modification['value'], "type": modification['type']}
+    for item in data:
+        if item != "csrf_token":
+            modifications[item] = {"value": data[item], "type": "String"}
     all_mods = {"modifications": modifications}
     json_response = pc.execute_request(url, request_type='POST', data=all_mods, session=session)
     return json_response
