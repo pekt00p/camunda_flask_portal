@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import requests
 import json
+import base64
 from app.portal_constants import Statuses
 
 
@@ -44,13 +45,13 @@ class PortalConnector:
                                                   data=data)
             status_code = requests_response.status_code
             if str(status_code).startswith('2'):  # success codes starts with 2, e.g. 200,
-                json_response = {}
+                response_data = {}
                 if requests_response.text:
                     if binary_data:  # attachment
-                        json_response = requests_response.text
+                        response_data = base64.b64encode(requests_response.content).decode()
                     else:
-                        json_response = json.loads(requests_response.text)
-                return {'status': Statuses.Success.value, 'response': json_response}
+                        response_data = json.loads(requests_response.text)
+                return {'status': Statuses.Success.value, 'response': response_data}
             else:
                 return {'status': Statuses.Failed.value, 'code': status_code}
         except Exception as ex:

@@ -31,7 +31,7 @@
 	</div>
 
     <div>
-		<img id="ItemPreview" src="data:image/jpg;base64," {{form.proof_file.response}}>
+		<h3>Proof file</h3>
+		<img id="ItemPreview" class="img-thumbnail" src="data:image/jpeg;base64, {{form.proof_file.response}}">
 	</div>
-    {{form.proof_file.response}}
 {% endblock %}
