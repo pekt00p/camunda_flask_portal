@@ -23,35 +23,38 @@ connector = PortalConnector()
 
 @app.route("/", methods=["POST", "GET"])
 def authenticate_user():
-    if 'language' not in session:
-        session['language'] = 'en'  # default
-    translations = tr.parse_template('app/templates/login.html', session['language'])
-    validations = vl.parse_template('app/templates/login.html')
-    if 'username' in session:
-        return if_user_authenticated(connector)
-    elif request.form:
-        result = connector.authenticate_user(request.form)
+    try:
+        if 'language' not in session:
+            session['language'] = 'en'  # default
+        translations = tr.parse_template('app/templates/login.html', session['language'])
         validations = vl.parse_template('app/templates/login.html')
-        validation_result = vl.validate_input(validations, request.form)
-        if result['status'] != Statuses.Success.value or not validation_result:
-            if result['status'] == Statuses.Exception.value:
-                return render_template('login.html',
-                                       exception_message=result['message'],
-                                       translations=translations,
-                                       validations=validations)
-            else:
-                return render_template('login.html',
-                                       exception_message='Authentication \
-                                       error, please check login or password',
-                                       translations=translations,
-                                       validations=validations)
-        else:
-            session['is_authenticated'] = True
-            session['username'] = request.form['uname']
-            session['password'] = request.form['pswd']
+        if 'username' in session:
             return if_user_authenticated(connector)
-    return render_template('login.html', translations=translations, validations=validations)
-
+        elif request.form:
+            result = connector.authenticate_user(request.form)
+            validations = vl.parse_template('app/templates/login.html')
+            validation_result = vl.validate_input(validations, request.form)
+            if result['status'] != Statuses.Success.value or not validation_result:
+                if result['status'] == Statuses.Exception.value:
+                    return render_template('login.html',
+                                           exception_message=result['message'],
+                                           translations=translations,
+                                           validations=validations)
+                else:
+                    return render_template('login.html',
+                                           exception_message='Authentication \
+                                           error, please check login or password',
+                                           translations=translations,
+                                           validations=validations)
+            else:
+                session['is_authenticated'] = True
+                session['username'] = request.form['uname']
+                session['password'] = request.form['pswd']
+                return if_user_authenticated(connector)
+        return render_template('login.html', translations=translations, validations=validations)
+    except Exception as ex:
+        logging.error("Error during authentication" + str(ex))
+        return render_template('/errors/server_not_found.html') # assume server not responding
 
 @app.route("/change_language/<language>", methods=["POST"])
 def change_language(language):
@@ -93,10 +96,12 @@ def get_group_task_by_id(task_id):
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id, view_type='user'):
     task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
+
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
+    variable_instances = ut.get_variable_instance_by_proc_inst_id_and_name(connector, session=session, proc_inst_id=task['response']['processInstanceId'])
     process_definition = ps.get_process_definition_by_id(connector, session=session,
                                                          process_def_if=task['response']['processDefinitionId'])
-    form = cff.factory.get_ut_form(task_vars=task_vars['response'], task=task['response'],
+    form = cff.factory.get_ut_form(connector, session=session, task_vars=variable_instances['response'], task=task['response'],
                                    process_definition=process_definition['response'])
     if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):
         return render_template(task['response']['formKey'], form=form, view_type=view_type)

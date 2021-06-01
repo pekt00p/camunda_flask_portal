@@ -2,8 +2,6 @@ __author__ = 'Oleg Ladizhensky'
 
 import json
 import codecs
-import sys
-from pathlib import Path
 import re
 
 

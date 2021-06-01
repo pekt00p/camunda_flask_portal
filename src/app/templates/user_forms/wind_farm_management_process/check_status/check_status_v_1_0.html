@@ -29,4 +29,9 @@
 			pattern="^\w{3,20}$"
 			required></textarea>
 	</div>
+
+    <div>
+		<img id="ItemPreview" src="data:image/jpg;base64," {{form.proof_file.response}}>
+	</div>
+    {{form.proof_file.response}}
 {% endblock %}

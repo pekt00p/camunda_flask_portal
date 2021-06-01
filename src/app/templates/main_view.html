@@ -89,10 +89,8 @@
     <!-- This is initializer code for navigation buttons-->
 
     $('#process_iframe').on("load", function() {
-
         var iframe = $(window.top.document).find("#process_iframe");
         iframe.height('0px' );
-        //iframe.height(iframe[0].ownerDocument.body.scrollHeight+'px' );
         iframe.height(iframe[0].contentWindow.document.body.scrollHeight+'px' );
     });
 
@@ -123,7 +121,6 @@
                 }; 
                 request.send();       
     }
-    
     
 
     
@@ -185,75 +182,7 @@
     function changeBadgeValue(badge_id, value){
          document.getElementById(badge_id).innerText = parseInt(document.getElementById(badge_id).innerText) + parseInt(value);
     }
-    
-	/*
-	function getInputVariables(){
-	var children = document.querySelectorAll('[id^="input_variable_"]'); 
-                var task_variables = {
-                    modifications: []
-                }
-                var variable_id = "";
-                for (i = 0; i < children.length; i++) {
-                    variable_id = children[i].id
-                    task_variables.modifications.push({ 
-                        variable_id : variable_id,
-                        "value"  : document.getElementById(variable_id).value,
-                        "type": "String" 
-					});
-                }
-				
-				return task_variables;
-	
-	}
-	*/
-	/*
-	function submitNewProcess(process_key){
-	    task_variables = getInputVariables();
-		 if(document.getElementById('main_form').checkValidity() == true){
-				const request = new XMLHttpRequest();
-                request.open('POST', `/submit_new_process/${process_key}`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    document.getElementById('process_form').innerHTML = response; 
-                }; 
-				
-                request.send(JSON.stringify(task_variables)); 
-		}
-		else{
-		    $('#alert_failed_window').show();
-		}
-	}
-	*/
-	/*
-    function completeUserTask(task_id, is_draft){ 
-    
-                task_variables = getInputVariables();
-                
-                const request = new XMLHttpRequest();
-				if (is_draft != "False"){                                               
-                   request.open('POST', `/save_draft/${task_id}`);
-                   
-                }
-				else{
-                    
-				    request.open('POST', `/complete_task_by_id/${task_id}`);
-			    }
-                request.onload = () => {
-                    const response = request.responseText; 
-                    if (response == "SUCCESS"){                    
-                        $('#alert_success_window').show();   
-                    }
-                    else {
-                        $('#alert_failed_window').show();
-                    }
-                    if (is_draft == "False"){
-                        window.location.reload();
-                    }
-                                        
-                }; 
-                request.send(JSON.stringify(task_variables));                  
-    }
-	*/
+
 
     function showProcessInstanceDescription(button){		
 		        const request = new XMLHttpRequest();

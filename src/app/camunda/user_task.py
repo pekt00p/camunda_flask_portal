@@ -2,7 +2,6 @@ __author__ = 'Oleg Ladizhensky'
 
 from app.connector import PortalConnector
 import datetime
-import json
 
 
 def get_all_user_tasks(pc: PortalConnector, session=None):
@@ -52,6 +51,22 @@ def get_task_vars_by_id(pc: PortalConnector, task_id, session=None):
     return json_response
 
 
+def get_variable_instance_by_proc_inst_id_and_name(pc: PortalConnector, proc_inst_id, var_name=None, session=None):
+    if var_name:
+        url = '/engine-rest/variable-instance?processInstanceIdIn=' \
+              + str(proc_inst_id) + '&variableName=' + str(var_name)
+    else:  # When var_name is not specified return all variable instances
+        url = '/engine-rest/variable-instance?processInstanceIdIn=' + str(proc_inst_id)
+    json_response = pc.execute_request(url, session=session)
+    return json_response
+
+
+def get_variable_instance_binary_data(pc: PortalConnector, variable_instance_id, session=None):
+    url = '/engine-rest/variable-instance/' + str(variable_instance_id) + '/data'
+    json_response = pc.execute_request(url, session=session, binary_data=True)
+    return json_response
+
+
 def unclaim(pc: PortalConnector, task_id, session=None):
     url = '/engine-rest/task/' + str(task_id) + '/unclaim'
     json_response = pc.execute_request(url, request_type='POST', data={}, session=session)
@@ -75,10 +90,6 @@ def complete_task_by_id(pc: PortalConnector, task_id, data=None, session=None):
     all_vars = {"variables": process_variables}
     json_response = pc.execute_request(url, request_type='POST', session=session, data=all_vars)
     return json_response
-
-
-
-
 
 
 def update_task_variables_by_id(pc: PortalConnector, task_id, data=None, session=None):

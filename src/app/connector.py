@@ -32,7 +32,7 @@ class PortalConnector:
             return {'status': Statuses.Exception.value, 'code': '',
                     'message': 'Mainetnace, please try again later'}
 
-    def execute_request(self, request_url, request_type='GET', data=None, session=None):
+    def execute_request(self, request_url, request_type='GET', binary_data=False, data=None, session=None):
         url = (str(self.camunda_url) + ':' + str(self.camunda_port) + request_url)
         try:
             if request_type == 'GET':
@@ -43,12 +43,16 @@ class PortalConnector:
                 requests_response = requests.post(url, auth=(session['username'], session['password']), headers=headers,
                                                   data=data)
             status_code = requests_response.status_code
-            if str(status_code).startswith('2'):  # success codes starts with 2, e.g. 200, 201
+            if str(status_code).startswith('2'):  # success codes starts with 2, e.g. 200,
                 json_response = {}
                 if requests_response.text:
-                    json_response = json.loads(requests_response.text)
+                    if binary_data:  # attachment
+                        json_response = requests_response.text
+                    else:
+                        json_response = json.loads(requests_response.text)
                 return {'status': Statuses.Success.value, 'response': json_response}
             else:
                 return {'status': Statuses.Failed.value, 'code': status_code}
         except Exception as ex:
-            return {'status': Statuses.Exception.value, 'code': '', 'message': ex}
+            raise
+            # return {'status': Statuses.Exception.value, 'code': '', 'message': ex}

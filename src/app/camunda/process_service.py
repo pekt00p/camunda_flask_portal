@@ -3,7 +3,6 @@ __author__ = 'Oleg Ladizhensky'
 import base64
 
 from app.connector import PortalConnector
-import json
 
 
 def get_user_allowed_processes(pc: PortalConnector, session=None):
