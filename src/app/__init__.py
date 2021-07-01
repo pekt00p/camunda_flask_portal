@@ -13,7 +13,7 @@ import app.forms.common_form_factory as cff
 app = Flask(__name__)
 
 # Set the secret key to some random bytes. Keep this really secret!
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]2/'
+app.secret_key = b'your_secret_key_here'
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', filename='execution.log',
                     encoding='utf-8', level=logging.DEBUG)
 tr = Translations()
@@ -54,7 +54,8 @@ def authenticate_user():
         return render_template('login.html', translations=translations, validations=validations)
     except Exception as ex:
         logging.error("Error during authentication" + str(ex))
-        return render_template('/errors/server_not_found.html') # assume server not responding
+        return render_template('/errors/server_not_found.html')  # assume server not responding
+
 
 @app.route("/change_language/<language>", methods=["POST"])
 def change_language(language):
@@ -95,14 +96,20 @@ def get_group_task_by_id(task_id):
 
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id, view_type='user'):
-    task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
 
+    task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
     variable_instances = ut.get_variable_instance_by_proc_inst_id_and_name(connector, session=session, proc_inst_id=task['response']['processInstanceId'])
     process_definition = ps.get_process_definition_by_id(connector, session=session,
                                                          process_def_if=task['response']['processDefinitionId'])
-    form = cff.factory.get_ut_form(connector, session=session, task_vars=variable_instances['response'], task=task['response'],
-                                   process_definition=process_definition['response'])
+    try:
+        form = cff.factory.get_ut_form(connector, session=session,
+                                       task_vars=variable_instances['response'],
+                                       task=task['response'],
+                                       process_definition=process_definition['response'])
+    except Exception as ex:
+        logging.error("Error during for determination" + str(ex))
+        return render_template('errors/404_form_not_found.html')
     if task['response']['formKey'] and path.exists('app/templates/' + str(task['response']['formKey'])):
         return render_template(task['response']['formKey'], form=form, view_type=view_type)
     else:
@@ -159,6 +166,7 @@ def complete_task(task_id):
     else:
         return Statuses.Failed.value
 
+
 @app.route("/submit_process/<process_key>", methods=["POST"])
 def submit_process(form=None, process_key=None):
     # Submitting only latest version of the process.
@@ -170,10 +178,6 @@ def submit_process(form=None, process_key=None):
     form.process_key = process_key
     form.process_name = process_definition['response']['name']
     form.process_description = process_definition['response']['description']
-    f = form.proof_file.data
-    #print(f.stream.read())
-
-    #f.save('' + f.filename)
     if form.validate():
         response = ps.submit_new_process(connector, session=session, process_key=process_key, data=form)
         if response['status'] == Statuses.Success.value:
