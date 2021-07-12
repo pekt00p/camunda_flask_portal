@@ -29,5 +29,4 @@ class CheckWindTurbineUT(CamundaTask):
     input_variable_user_comment_init = StringField('input_variable_user_comment_init',
                                                    [validators.Regexp(regex=r'^\w{5,20}$')], default='')
 
-    proof_file = FileField('Profile',
-                           validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+    proof_file = FileField('Profile', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])

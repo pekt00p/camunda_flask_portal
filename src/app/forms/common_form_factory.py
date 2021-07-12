@@ -20,14 +20,13 @@ class FormFactory:
                         if task_var['type'] == 'String':
                             setattr(form, task_var['name'], task_var['value'])
                         elif task_var['type'] == 'File':
-                            task_var_inst = ut.get_variable_instance_by_proc_inst_id_and_name(pc, session=session, proc_inst_id=task_var['processInstanceId'], var_name=task_var['name'])
-                            payload = ut.get_variable_instance_binary_data(pc, session=session,variable_instance_id=task_var['id'])
+                            payload = ut.get_variable_instance_binary_data(pc, session=session,
+                                                                           variable_instance_id=task_var['id'])
                             setattr(form, task_var['name'], payload)
                 form.task_id = task['id']
             return form
         else:
             raise ValueError('Unknown type')
-
 
 
 factory = FormFactory()

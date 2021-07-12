@@ -97,9 +97,10 @@ def get_group_task_by_id(task_id):
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id, view_type='user'):
 
-    task_vars = ut.get_task_vars_by_id(connector, session=session, task_id=task_id)
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
-    variable_instances = ut.get_variable_instance_by_proc_inst_id_and_name(connector, session=session, proc_inst_id=task['response']['processInstanceId'])
+    proc_inst_id = task['response']['processInstanceId']
+    variable_instances = ut.get_variable_instance_by_proc_inst_id_and_name(connector, session=session,
+                                                                           proc_inst_id=proc_inst_id)
     process_definition = ps.get_process_definition_by_id(connector, session=session,
                                                          process_def_if=task['response']['processDefinitionId'])
     try:
