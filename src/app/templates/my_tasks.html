@@ -11,7 +11,7 @@
 </tr>
 </thead>
 <tbody >
-    {%for record in my_tasks%}
+    {% for record in my_tasks %}
 
         <tr id={{record.id}}>
             <td> <input id="is_selected_{{record.id}}" type="checkbox"></td>
@@ -21,18 +21,18 @@
             <td>{{record.due}}</td>
             <td>{{record.priority}}</td>
         </tr>
-    {%endfor%}
+    {% endfor %}
 
 </tbody>
 </table>
 
-{{view_type}}
+
   <div>
-  {%if view_type=="user"%}
+  {% if view_type == "user" %}
   <button type="button" onclick="claimUnclaimSelectedTasks(action='unclaim')" id="unclaim_task" class="btn btn-primary">Unclaim</button>
   
-  {%elif view_type =="group"%}
+  {% elif view_type == "group" %}
   <button type="button" onclick="claimUnclaimSelectedTasks(action='claim')" id="claim_task" class="btn btn-primary">Claim</button>
-  {%endif%}
+  {% endif %}
   </div>
 

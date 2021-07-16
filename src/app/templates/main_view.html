@@ -1,213 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Portal basic design</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  
+    <head>
+        <title>Portal basic design</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+        <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+    </head>
+    <body>
+        <form method="POST" class="was-validated" id="main_form" action="{{url_for('request_processor')}}" enctype="multipart/form-data">
+            <div class="jumbotron text-center" style="margin-bottom:0">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <img src="static/img/logo.png" class="img-rounded" width="256" height="165" alt="Your logo here">
+                    </div>
+                    <div class="col-sm-6">
+                        <h1>Baltic North Wind Farm Portal</h1>
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Welcome: <strong>{{user_details.firstName}} {{user_details.lastName}}</strong></label>
+                        <button type="button" onclick="logout()" class="btn btn-primary" data-toggle="button" aria-pressed="false">
+                        Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="alert alert-success" onclick="$('#alert_success_window').hide()" id="alert_success_window" role="alert" style="display:none;" >Success</div>
+                <div class="alert alert-danger" onclick="$('#alert_failed_window').hide()" id="alert_failed_window" role="alert" style="display:none;" >Operation FAILED.</div>
+                <div class="row">
+                    <div class="col-sm-2" style="border:1px solid #cecece;">
+                        <br><br>
+                        <button type="button" onclick="setTasksView(this, 'get_task_by_id')" id="my_tasks_button" class="btn btn-danger btn-lg btn-block">
+                        <i class="fa fa-trophy"></i>&nbsp;
+                        My Tasks <span id="user_task_count" class="badge badge-light">{{user_task_count}}</span>
+                        </button>
+                        <br><br><br>
+                        <button type="button" onclick="setTasksView(this, 'get_group_task_by_id')" id="group_tasks_button" class="btn btn-secondary btn-lg btn-block">
+                        <i class="fa fa-users"></i>&nbsp;
+                        Group Tasks <span id="group_task_count" class="badge badge-light">{{group_task_count}}</span>
+                        </button>
+                        <br><br><br>
+                        <button type="button" onclick="setTasksView(this, 'get_process_history_by_id')" id="my_requests_button" class="btn btn-primary btn-lg btn-block">
+                        <i class="fa fa-wrench"></i>&nbsp;
+                        My Requests <span class="badge badge-light"></span>
+                        </button>
+                        <br><br><br>
+                        <button type="button" onclick="setTasksView(this, '')" id="create_request_button" class="btn btn-success btn-lg btn-block">
+                        <i class="fa fa-plus-square"></i>&nbsp;
+                        Create Request <span class="badge badge-light"></span>
+                        </button>
+                        <br><br><br>
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
-<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+                        <!-- Available only for employee -->
+                        {% for member in group_member %}
+                            {% if member.type == "WORKFLOW" %}
+                                <button type="button" onclick="setTasksView(this, '')" id="get_report_list" class="btn btn-success btn-lg btn-block">
 
+                                <i class="fa fa-pie-chart"></i>&nbsp;
+                                Reports <span class="badge badge-light"></span>
+                                </button>
+                                <br><br><br>
+                                {% break %}
+                            {% endif %}
 
-</head>
-<body>
-<form method="POST" class="was-validated" id="main_form" action="{{url_for('request_processor')}}" enctype="multipart/form-data"> 
-    <div class="jumbotron text-center" style="margin-bottom:0">
-    <div class="row">
-         <div class="col-sm-3">
-		     <img src="static/img/logo.png" class="img-rounded" width="256" height="165" alt="Your logo here">
-         </div>
-        <div class="col-sm-6">
-            <h1>Baltic North Wind Farm Portal</h1>
-        </div>
-        <div class="col-sm-3">
-            <label>Welcome: <strong>{{user_details.firstName}} {{user_details.lastName}}</strong></label>
-            
-            <button type="button" onclick="logout()" class="btn btn-primary" data-toggle="button" aria-pressed="false">
-                Logout
-            </button>
-        </div>
-    </div>
-    </div>
+                       {% endfor %}
 
-    <div class="container-fluid">
-    
-<div class="alert alert-success" onclick="$('#alert_success_window').hide()" id="alert_success_window" role="alert" style="display:none;" >Success</div>
+                    </div>
+                    <div class="col-sm-4" id="record_list" style="border:1px solid #cecece;">
+                    </div>
+                    <div class="col-sm-6" id="process_form" style="border:1px solid #cecece;">
+                        <iframe id="process_iframe" width="100%" height="0px" frameBorder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="jumbotron text-center" style="margin-bottom:0">
+                <p>@ 2021</p>
+            </div>
+        </form>
+    </body>
+    <script type="text/javascript">
+        <!-- This is initializer code for navigation buttons-->
 
-<div class="alert alert-danger" onclick="$('#alert_failed_window').hide()" id="alert_failed_window" role="alert" style="display:none;" >Operation FAILED.</div>
-
-    
-    
-      <div class="row">
-        <div class="col-sm-2" style="border:1px solid #cecece;">
-             <br><br>
-
-             <button type="button" onclick="setTasksView(this, 'get_task_by_id')" id="my_tasks_button" class="btn btn-danger btn-lg btn-block">
-                 <i class="fa fa-trophy"></i>&nbsp;
-                 My Tasks <span id="user_task_count" class="badge badge-light">{{user_task_count}}</span>
-             </button>
-             <br><br><br>
-             <button type="button" onclick="setTasksView(this, 'get_group_task_by_id')" id="group_tasks_button" class="btn btn-secondary btn-lg btn-block">
-                 <i class="fa fa-users"></i>&nbsp;
-                 Group Tasks <span id="group_task_count" class="badge badge-light">{{group_task_count}}</span>
-             </button>
-             <br><br><br>
-             <button type="button" onclick="setTasksView(this, 'get_process_history_by_id')" id="my_requests_button" class="btn btn-primary btn-lg btn-block">
-                 <i class="fa fa-wrench"></i>&nbsp;
-                 My Requests <span class="badge badge-light"></span>
-             </button>
-             <br><br><br>
-             <button type="button" onclick="setTasksView(this, '')" id="create_request_button" class="btn btn-success btn-lg btn-block">
-                 <i class="	fa fa-plus-square"></i>&nbsp;
-                 Create Request <span class="badge badge-light"></span>
-             </button>
-             <br><br><br>
-
-        </div>
-        <div class="col-sm-4" id="record_list" style="border:1px solid #cecece;">
-
-        </div>
-        <div class="col-sm-6" id="process_form" style="border:1px solid #cecece;">
-            <iframe id="process_iframe" width="100%" height="0px" frameBorder="0"></iframe>
-        </div>
-      </div>
-    </div>
-
-    <div class="jumbotron text-center" style="margin-bottom:0">
-      <p>@ 2021</p>
-    </div>
-</form>
-</body>
-<script type="text/javascript">  
-    <!-- This is initializer code for navigation buttons-->
-
-    $('#process_iframe').on("load", function() {
-        var iframe = $(window.top.document).find("#process_iframe");
-        iframe.height('0px' );
-        iframe.height(iframe[0].contentWindow.document.body.scrollHeight+'px' );
-    });
-
-
-    function setTasksView(button, resource_path){
-        const request = new XMLHttpRequest();
-        request.open('POST', `/${button.id}`);
-        request.onload = () => {
-            const response = request.responseText;
-            document.getElementById('record_list').innerHTML = response;
-            $('#sortTable').DataTable();           
-            $('#sortTable tbody tr').click(function() {
-            getTasks(this, resource_path);           
-            $(this).addClass('active').siblings().removeClass('active');
+        $('#process_iframe').on("load", function() {
+            var iframe = $(window.top.document).find("#process_iframe");
+            iframe.height('0px' );
+            iframe.height(iframe[0].contentWindow.document.body.scrollHeight+'px' );
         });
-            
-        }; 
-        request.send();   
-    
-    };
-    
-    function logout(){
-        const request = new XMLHttpRequest();
-                request.open('POST', `/logout`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    document.write(response);
-                }; 
-                request.send();       
-    }
-    
 
-    
-    function claimUnclaimSelectedTasks(action, task_id){
 
-        task_for_unclaim = new Array();
-        if(task_id != null){
-            task_for_unclaim.push([task_id]);
-            
+        function setTasksView(button, resource_path){
+            const request = new XMLHttpRequest();
+            request.open('POST', `/${button.id}`);
+            request.onload = () => {
+                const response = request.responseText;
+                document.getElementById('record_list').innerHTML = response;
+                $('#sortTable').DataTable();
+                $('#sortTable tbody tr').click(function() {
+                getTasks(this, resource_path);
+                $(this).addClass('active').siblings().removeClass('active');
+            });
+
+            };
+            request.send();
+
+        };
+
+        function logout(){
+            const request = new XMLHttpRequest();
+                    request.open('POST', `/logout`);
+                    request.onload = () => {
+                        const response = request.responseText;
+                        document.write(response);
+                    };
+                    request.send();
         }
 
-        else{
-            trs = document.getElementById("sortTable").rows;
-            for(var i=1; i< trs.length; i++){ //skip first record
-                if (document.getElementById("is_selected_"+trs[i].id).checked){
-                    task_for_unclaim.push([trs[i].id]);
+
+
+        function claimUnclaimSelectedTasks(action, task_id){
+
+            task_for_unclaim = new Array();
+            if(task_id != null){
+                task_for_unclaim.push([task_id]);
+
+            }
+
+            else{
+                trs = document.getElementById("sortTable").rows;
+                for(var i=1; i< trs.length; i++){ //skip first record
+                    if (document.getElementById("is_selected_"+trs[i].id).checked){
+                        task_for_unclaim.push([trs[i].id]);
+                    }
                 }
             }
+            const request = new XMLHttpRequest();
+                    request.open('POST', `/${action}`);
+                    request.onload = () => {
+                        const response = request.responseText;
+                        if (response == "SUCCESS"){
+                            $('#alert_success_window').show();
+                            if (action == "unclaim"){
+                                changeBadgeValue("user_task_count", -task_for_unclaim.length);
+                                changeBadgeValue("group_task_count", task_for_unclaim.length);
+                            }
+                            else if (action == "claim"){
+                                changeBadgeValue("user_task_count", task_for_unclaim.length);
+                                changeBadgeValue("group_task_count", -task_for_unclaim.length);
+                            }
+                            document.getElementById('process_form').innerHTML = "";
+                            for(var i=0; i<task_for_unclaim.length; i++){
+                                row_for_deletion = document.getElementById(task_for_unclaim[i]);
+                                document.getElementById("sortTable").deleteRow(row_for_deletion.rowIndex);
+                            }
+                        }
+                        else {
+                            $('#alert_failed_window').show();
+                        }
+                    };
+                    request.send(JSON.stringify(task_for_unclaim));
         }
-        const request = new XMLHttpRequest();
-                request.open('POST', `/${action}`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    if (response == "SUCCESS"){                    
-                        $('#alert_success_window').show(); 
-                        if (action == "unclaim"){
-                            changeBadgeValue("user_task_count", -task_for_unclaim.length);          
-                            changeBadgeValue("group_task_count", task_for_unclaim.length);  
-                        }
-                        else if (action == "claim"){
-                            changeBadgeValue("user_task_count", task_for_unclaim.length);          
-                            changeBadgeValue("group_task_count", -task_for_unclaim.length);  
-                        }
-                        document.getElementById('process_form').innerHTML = "";                        
-                        for(var i=0; i<task_for_unclaim.length; i++){      
-                            row_for_deletion = document.getElementById(task_for_unclaim[i]);
-                            document.getElementById("sortTable").deleteRow(row_for_deletion.rowIndex);
-                        }                        
-                    }
-                    else {
-                        $('#alert_failed_window').show();
-                    } 
-                }; 
-                request.send(JSON.stringify(task_for_unclaim));       
-    }
-    
-    function getTasks(obj, resource_path){
-                const request = new XMLHttpRequest();
-                request.open('POST', `/${resource_path}/${obj.id}`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    //document.getElementById('process_form').innerHTML = response;
-                    document.getElementById('process_iframe').srcdoc = response;
-                    $('#sortTable').DataTable();
-                }; 
-                request.send();             
-    }
-    
-    function changeBadgeValue(badge_id, value){
-         document.getElementById(badge_id).innerText = parseInt(document.getElementById(badge_id).innerText) + parseInt(value);
-    }
+
+        function getTasks(obj, resource_path){
+                    const request = new XMLHttpRequest();
+                    request.open('POST', `/${resource_path}/${obj.id}`);
+                    request.onload = () => {
+                        const response = request.responseText;
+                        //document.getElementById('process_form').innerHTML = response;
+                        document.getElementById('process_iframe').srcdoc = response;
+                        $('#sortTable').DataTable();
+                    };
+                    request.send();
+        }
+
+        function changeBadgeValue(badge_id, value){
+             document.getElementById(badge_id).innerText = parseInt(document.getElementById(badge_id).innerText) + parseInt(value);
+        }
 
 
-    function showProcessInstanceDescription(button){		
-		        const request = new XMLHttpRequest();
-                request.open('POST', `/get_process_description/${button.id}`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    document.getElementById('process_form').innerHTML = response; 
-                }; 
-                request.send(); 
-    }
-	
-	
-	function startNewProcessInstance(button){		
-		        const request = new XMLHttpRequest();
-                request.open('POST', `/start_new_process_instance/${button.id}`);
-                request.onload = () => {
-                    const response = request.responseText;
-                    //document.getElementById('process_form').innerHTML = response;
-                   // document.querySelector('iframe').srcdoc = response;
-                    document.getElementById('process_iframe').srcdoc = response;
-
-                }; 
-                request.send(); 
-    }
-</script>
+        function showProcessInstanceDescription(button){
+              const request = new XMLHttpRequest();
+                    request.open('POST', `/get_process_description/${button.id}`);
+                    request.onload = () => {
+                        const response = request.responseText;
+                        document.getElementById('process_form').innerHTML = response;
+                    };
+                    request.send();
+        }
 
 
+        function startNewProcessInstance(button){
+              const request = new XMLHttpRequest();
+                    request.open('POST', `/start_new_process_instance/${button.id}`);
+                    request.onload = () => {
+                        const response = request.responseText;
+                        document.getElementById('process_iframe').srcdoc = response;
+
+                    };
+                    request.send();
+        }
+
+        function generateReport(button){
+              const request = new XMLHttpRequest();
+                    request.open('POST', `/generate_report/${button.id}`);
+                    request.onload = () => {
+                        const response = request.responseText;
+                        document.getElementById('process_iframe').srcdoc = response;
+
+                    };
+                    request.send();
+        }
+
+
+    </script>
 </html>

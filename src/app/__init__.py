@@ -3,15 +3,17 @@ from app.connector import PortalConnector
 from app.portal_constants import Statuses
 from app.helpers import Translations, Validations
 import app.camunda.user_task as ut
+import app.camunda.user_group as ug
 import app.camunda.history_service as hs
 import app.camunda.process_service as ps
 import json
 from os import path
 import logging
 import app.forms.common_form_factory as cff
+import app.reports.user_tasks_count_report as user_tasks_count_report
 
 app = Flask(__name__)
-
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'your_secret_key_here'
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', filename='execution.log',
@@ -96,7 +98,6 @@ def get_group_task_by_id(task_id):
 
 @app.route("/get_task_by_id/<task_id>", methods=["POST"])
 def get_task_form(task_id, view_type='user'):
-
     task = ut.get_user_task_by_id(connector, session=session, task_id=task_id)
     proc_inst_id = task['response']['processInstanceId']
     variable_instances = ut.get_variable_instance_by_proc_inst_id_and_name(connector, session=session,
@@ -225,6 +226,17 @@ def get_user_allowed_processes():
     return render_template('user_processes.html', processes=response['response'])
 
 
+@app.route("/get_report_list", methods=["POST"])
+def get_report_list():
+    return render_template('user_reports.html')
+
+
+@app.route("/generate_report/<report_name>", methods=["POST"])
+def generate_report(report_name):
+    user_tasks_count_report.generate_report()
+    return render_template('report_viewer.html', url='app/reports/tmp/new_plot.png')
+
+
 @app.route("/get_process_description/<process_key>", methods=["POST"])
 def get_process_description(process_key):
     response = ps.get_user_allowed_process_by_key(connector, session=session, process_key=process_key)
@@ -254,10 +266,11 @@ def request_processor():
 # Sets values for initial page
 def if_user_authenticated(connector=None):
     user_details = ut.get_user_profile(connector, session)
-    print(user_details)
     user_task_count = ut.count_all_user_tasks(connector, session)
     group_task_count = ut.count_all_group_tasks(connector, session)
+    group_member = ug.get_member_groups(connector, session)
     return render_template('main_view.html',
+                           group_member=group_member['response'],
                            user_details=user_details['response'],
                            user_task_count=user_task_count['response']['count'],
                            group_task_count=group_task_count['response']['count'])
