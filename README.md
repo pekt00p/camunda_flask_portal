@@ -25,8 +25,8 @@ python run.py
 If everything is correct you should see this screen:
 ![](https://raw.githubusercontent.com/pekt00p/camunda_flask_portal/main/screenshots/login_en.jpg)
 
-##Limitations
+## Limitations
 - Basic Authentication
 
-##License
+## License
 The source files in this repository are made available under the [Apache License Version 2.0.](https://github.com/camunda/camunda-bpm-platform/blob/master/LICENSE)
